@@ -3,7 +3,7 @@ Bourne shell script to install [Sephrasto](https://github.com/Aeolitus/Sephrasto
 
 ## Table of Contents
 
-### Download and Installation of the Installer
+### Download of the Installer
 Download the installer.
 ```
 wget https://raw.githubusercontent.com/kgitthoene/void-linux-sephrasto-installer/master/void-linux-sephrasto-installer-python3.9.7.sh
