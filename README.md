@@ -17,6 +17,10 @@ Download, build and install Python 3.9.7 and Sephrasto.
 /bin/sh ./void-linux-sephrasto-installer-python3.9.7.sh build install
 ```
 
+### Tests
+
+Tested with a fresh installed Void Linux `x86_64-20230628-xfce glibc`.
+
 ### Usage
 
 ```
