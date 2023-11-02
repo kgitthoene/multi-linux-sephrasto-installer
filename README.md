@@ -14,7 +14,7 @@ wget https://raw.githubusercontent.com/kgitthoene/void-linux-sephrasto-installer
 Download, build and install Python 3.9.7 and Sephrasto.
 
 ```
-$ /bin/sh void-linux-sephrasto-installer-python3.9.7.sh build install
+$ /bin/sh ./void-linux-sephrasto-installer-python3.9.7.sh build install
 ```
 
 ### Usage
