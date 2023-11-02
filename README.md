@@ -25,7 +25,7 @@ Options:
 
 #### build
 
-`void-linux-sephrasto-installer-python3.9.7.sh build` updates Void Linux, installs all needed packages, builds (Python)[https://www.python.org/] 3.9.7 in a separate directory and creates a virtual Python environment to run Sephrasto.
+The `build` command updates Void Linux, installs all needed packages, builds (Python)[https://www.python.org/] 3.9.7 in a separate directory and creates a virtual Python environment to run Sephrasto.
 
 The Python build is placed in `~/.localpython/python3.9.7`.
 
@@ -33,5 +33,15 @@ The Sephrato (venv)[https://docs.python.org/3/library/venv.html] is placed in `~
 
 The script `Sephrasto.sh` to run Sephrasto is placed in `~/.localpython/bin`.
 
-The **.desktop** file `Sephrasto.desktop` is placed in `~/.localpython/bin`.
+The .desktop file `Sephrasto.desktop` is placed in `~/.localpython/bin`.
+
+The log file from Sephrato `sephrasto.log` can be found in `~/.localpython/bin/venv-seprastro-3.9.7`.
+
+#### install
+
+Copies the `Sephrasto.desktop` file to `~/.local/share/applications`.
+
+#### clean
+
+Removes all installed stuff, including the separate Python and Sephrasto.
 
