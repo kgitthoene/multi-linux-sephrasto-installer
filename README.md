@@ -43,5 +43,5 @@ Copies the `Sephrasto.desktop` file to `~/.local/share/applications`.
 
 #### clean
 
-Removes all installed stuff, including the separate Python and Sephrasto.
+Removes all installed stuff, including the separately installed Python and Sephrasto.
 
