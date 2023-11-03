@@ -49,7 +49,7 @@ Options:
 
 #### build
 
-The `build` command updates Void Linux, installs all needed packages, builds [Python](https://www.python.org/) 3.9.7 in a separate directory and creates a virtual Python environment to run Sephrasto.
+The `build` command updates your Linux, installs all needed packages, builds [Python](https://www.python.org/) 3.9.7 in a separate directory and creates a virtual Python environment to run Sephrasto.
 
 The Python build is placed in `~/.localpython/python3.9.7`.
 
@@ -67,5 +67,7 @@ Copies the `Sephrasto.desktop` file to `~/.local/share/applications`.
 
 #### clean
 
-Removes all installed stuff, including the separately installed Python and Sephrasto.
+Removes all installed stuff[^2], including the separately installed Python and Sephrasto.
 
+[^2]: But not the installed OS packages.
+  I'am not going to destruct your system!
