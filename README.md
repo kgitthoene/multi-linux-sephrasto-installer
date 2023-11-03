@@ -30,6 +30,8 @@ Commands:
   install         -- Install .desktop file for Sephrasto.
   clean           -- Remove all installed stuff.
   uninstall       -- Same as clean.
+  run             -- Start Sephrasto.
+  start           -- Same as run.
 Options:
   -d, --debug     -- Output debug messages.
   -h, --help      -- Print this text.
