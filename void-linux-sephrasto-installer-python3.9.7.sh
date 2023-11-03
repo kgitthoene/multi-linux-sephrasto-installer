@@ -669,7 +669,7 @@ EOF
 #----------
 # Check restart of this script.
 #
-check_tools printf tar sed basename dirname sudo
+check_tools printf tar sed basename dirname sudo grep
 [ "$1" = "-" ] && { SCRIPT_OPT_SUDORESTART=true; shift; }
 #
 #----------
