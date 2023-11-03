@@ -21,12 +21,13 @@ Download, build and install Python 3.9.7 and Sephrasto.
 
 ### Tests
 
-Tested with a fresh installed Void Linux `x86_64-20230628-xfce glibc`.
+| Linux Distribution | Version                              | Test Result |
+| ----------         | ----------                           | ----------  |
+| Void Linux         | `x86_64-20230628-xfce glibc`         | WORKING     |
+| Xubuntu            | `22.04.3 LTS`                        | WORKING     |
+| Void Linux         | `x86_64-musl-20230628-xfce musl`[^1] | FAIL        |
 
-Doesn't work with Void Linux `x86_64-musl-20230628-xfce musl`. :sob:
-There seems to be no distribution of [PySide6](https://pypi.org/project/PySide6/) for [musl](https://www.musl-libc.org/). :confused:
-
-Tested with a fresh installed Xubuntu `22.04.3 LTS`.
+[^1]: There seems to be no distribution of [PySide6](https://pypi.org/project/PySide6/) for [musl](https://www.musl-libc.org/). :confused:
 
 ### Usage
 
