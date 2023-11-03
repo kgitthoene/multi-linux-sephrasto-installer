@@ -21,6 +21,8 @@ Download, build and install Python 3.9.7 and Sephrasto.
 
 ### Tests
 
+The tests were carried out on fresh installations.
+
 | Linux Distribution | Version                              | Test Result |
 | ----------         | ----------                           | ----------  |
 | Void Linux         | `x86_64-20230628-xfce glibc`         | WORKING     |
