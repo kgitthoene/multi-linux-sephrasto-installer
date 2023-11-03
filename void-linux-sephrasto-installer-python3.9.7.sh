@@ -465,7 +465,7 @@ do_with_sudo() {
       exit 1
     }
     if type sudo >/dev/null 2>&1; then
-      warn "You don't have super cow powers! Try to start commands with sudo ... CMD='$CMD'"
+      warn "You don't have super cow powers! Try to start commands with sudo ..."
       sudo -H "$SHELL" "$0" - "$CMD"; RC=$?
       info "|< End of sudo command sequence."
       [ "$RC" = "0" ] || exit $RC
@@ -501,7 +501,7 @@ do_build() {
   TMPFILE=`mktemp -p "$LOCAL_PYTHON_BUILD_DIR" "$MYNAME-python-src-XXXXXXX"`
   trap at_exit EXIT HUP INT QUIT TERM
   wget -q "https://www.python.org/ftp/python/$PYHTON_VERSION_TO_INSTALL/Python-$PYHTON_VERSION_TO_INSTALL.tar.xz" -O - > "$TMPFILE"
-  (
+  [ 1 = 0 ] && (
     cd "$LOCAL_PYTHON_BUILD_DIR"
     tar xf "$TMPFILE"
     rm -f "$TMPFILE"
@@ -551,6 +551,7 @@ do_build() {
     (
       cd "venv-sephrasto-$PYHTON_VERSION_TO_INSTALL"
       . ./bin/activate
+      ./bin/python3 -m pip install --upgrade pip
       info "Download Sephrasto ..."
       [ -d Sephrasto ] || git clone https://github.com/Aeolitus/Sephrasto.git || { error "Cannot download Sephrasto! GIT CLONE"; exit 1; }
       info "Install Sephrasto requierements ..."
