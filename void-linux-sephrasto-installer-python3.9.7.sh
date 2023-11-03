@@ -501,7 +501,7 @@ do_build() {
   TMPFILE=`mktemp -p "$LOCAL_PYTHON_BUILD_DIR" "$MYNAME-python-src-XXXXXXX"`
   trap at_exit EXIT HUP INT QUIT TERM
   wget -q "https://www.python.org/ftp/python/$PYHTON_VERSION_TO_INSTALL/Python-$PYHTON_VERSION_TO_INSTALL.tar.xz" -O - > "$TMPFILE"
-  [ 1 = 0 ] && (
+  (
     cd "$LOCAL_PYTHON_BUILD_DIR"
     tar xf "$TMPFILE"
     rm -f "$TMPFILE"
