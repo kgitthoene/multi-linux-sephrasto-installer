@@ -348,11 +348,11 @@ trap at_exit EXIT HUP INT QUIT TERM
 # Internal Script Functions
 #
 calc() { printf "%s\n" "$@" | bc -l; }
-calc_to_i() { printf "((%s)+0.5)/1\n" "$@" | bc; }
+calc_to_i() { printf "%.0f\n" "$@"; }
 #
 output_percentage() {
   PERCENT="$1"
-  PPERCENT=`printf "%0.f" $PERCENT`
+  PPERCENT=`printf "%.0f" $PERCENT`
   [ `calc "$PPERCENT>100"` = 1 ] && PPERCENT=100
   [ "$OUTPUT_PERCENTAGE_PPERCENT" = "$PPERCENT" ] || {
     PCOUNT=`calc "$PERCENT/10"`
@@ -372,11 +372,11 @@ output_percentage() {
   }
 }  # output_percentage
 #
-output_in_cace_of_error() {
-  # Usage: output_in_cace_of_error [--count [EXPECTED_LINES]]
+output_in_case_of_error() {
+  # Usage: output_in_case_of_error [--count [EXPECTED_LINES]]
   CMD="$1"
   unset ECHO_OPTION; [ "`echo -e`" = '-e' ] || ECHO_OPTION='-e'
-  TMPFILE=`mktemp "$MYNAME-output_in_cace_of_error-XXXXXXX"`
+  TMPFILE=`mktemp "$MYNAME-output_in_case_of_error-XXXXXXX"`
   trap at_exit EXIT HUP INT QUIT TERM
   COUNT=0
   IS_CALCULATOR_AVAILABLE=false
@@ -415,23 +415,23 @@ output_in_cace_of_error() {
   case "$LINE" in
     PIPESTATE*=*) RC=`echo "$LINE" | sed -e 's/PIPESTATE.*=//'`;;
   esac
-  #echo "output_in_cace_of_error: RC=$RC" >&2
+  #echo "output_in_case_of_error: RC=$RC" >&2
   [ "$RC" = "0" ] || { head -n -1 "$TMPFILE"; }
   rm -f "$TMPFILE"
   return $RC
-}  # output_in_cace_of_error
+}  # output_in_case_of_error
 #
 sudo_install_packages() {
   # Packages to build python3:
   info "Update system ... (On a fresh system this may take a long time.)"
-  { xbps-install -y -Su 2>&1; echo PIPESTATE0=$?; } | output_in_cace_of_error || { xbps-install -y -u xbps >/dev/null 2>&1; }
-  { xbps-install -y -Su 2>&1; echo PIPESTATE0=$?; } | output_in_cace_of_error
+  { xbps-install -y -Su 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { xbps-install -y -u xbps >/dev/null 2>&1; }
+  { xbps-install -y -Su 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error
   # Packages to build python
   info "Install packages to build python ..."
-  { xbps-install -y base-devel binutils tar wget git xz openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb-devel libzstd-devel gdbm-devel liblzma-devel tk-devel libipset-devel libnsl-devel libtirpc-devel; echo PIPESTATE0=$?; } 2>&1 | output_in_cace_of_error
+  { xbps-install -y base-devel binutils tar wget git xz openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb-devel libzstd-devel gdbm-devel liblzma-devel tk-devel libipset-devel libnsl-devel libtirpc-devel; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error
   # Packages to run Sephrasto
-  info "Install packages to run Seprasto ..."
-  { xbps-install -y qt5 libxcb libxcb-devel xcb-util-cursor xcb-imdkit xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm; echo PIPESTATE0=$?; } 2>&1 | output_in_cace_of_error
+  info "Install packages to run Sephrasto ..."
+  { xbps-install -y qt5 libxcb libxcb-devel xcb-util-cursor xcb-imdkit xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error
 }  # sudo_install_packages
 #
 do_with_sudo() {
@@ -488,21 +488,21 @@ do_build() {
     cd "Python-$PYHTON_VERSION_TO_INSTALL" ||  { error "Cannot change to directory! DIR='$LOCAL_PYTHON_BUILD_DIR/Python-$PYHTON_VERSION_TO_INSTALL'"; exit 1; }
     info "Build python: ./configure ..."
     unset OUTPUT_PERCENTAGE_PPERCENT
-    { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" ; echo PIPESTATE0=$?; } 2>&1 | output_in_cace_of_error --count 747
+    { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" ; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error --count 747
     info "Build python: make"
     unset OUTPUT_PERCENTAGE_PPERCENT
-    { make; echo PIPESTATE0=$?; } 2>&1 | output_in_cace_of_error --count 753
+    { make; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error --count 753
     info "Build python: make install"
     unset OUTPUT_PERCENTAGE_PPERCENT
-    { make install; echo PIPESTATE0=$?; } 2>&1 | output_in_cace_of_error --count 8096
+    { make install; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error --count 8096
   )
   [ -f "$TMPFILE" ] && rm -f "$TMPFILE"
   (
     cd "$LOCAL_SEPHRASTRO_DIR"
     info "Create Sephrasto python environment ..."
-    "$LOCAL_PYTHON_INSTALLATION_DIR/bin/python3" -m venv "venv-seprastro-$PYHTON_VERSION_TO_INSTALL"
+    "$LOCAL_PYTHON_INSTALLATION_DIR/bin/python3" -m venv "venv-sephrasto-$PYHTON_VERSION_TO_INSTALL"
     (
-      cd "venv-seprastro-$PYHTON_VERSION_TO_INSTALL"
+      cd "venv-sephrasto-$PYHTON_VERSION_TO_INSTALL"
       . ./bin/activate
       info "Download Sephrasto ..."
       [ -d Sephrasto ] || git clone https://github.com/Aeolitus/Sephrasto.git || { error "Cannot download Sephrasto! GIT CLONE"; exit 1; }
@@ -518,7 +518,7 @@ Type=Application
 Name=Sephrasto
 Comment=
 Exec=/bin/sh "$LOCAL_SEPHRASTRO_DIR/Sephrasto.sh"
-Icon=$LOCAL_SEPHRASTRO_DIR/venv-seprastro-$PYHTON_VERSION_TO_INSTALL/Sephrasto/src/Sephrasto/icon_large.png
+Icon=$LOCAL_SEPHRASTRO_DIR/venv-sephrasto-$PYHTON_VERSION_TO_INSTALL/Sephrasto/src/Sephrasto/icon_large.png
 Terminal=false
 StartupNotify=true
 Name[de_DE]=Sephrasto
@@ -526,7 +526,7 @@ EOF
     info "Create Sephrasto startup script ..."
     cat > Sephrasto.sh <<EOF
 #!/bin/sh
-cd "$LOCAL_SEPHRASTRO_DIR/venv-seprastro-$PYHTON_VERSION_TO_INSTALL"
+cd "$LOCAL_SEPHRASTRO_DIR/venv-sephrasto-$PYHTON_VERSION_TO_INSTALL"
 . ./bin/activate
 exec ./bin/python3 Sephrasto/src/Sephrasto/Sephrasto.py
 EOF
@@ -553,7 +553,7 @@ do_clean() {
   IS_SOMETHING_TO_CLEAN=false
   for DIR in \
     "$HOME/.localpython/build/Python-$PYHTON_VERSION_TO_INSTALL" \
-    "$HOME/.localpython/bin/venv-seprastro-$PYHTON_VERSION_TO_INSTALL" \
+    "$HOME/.localpython/bin/venv-sephrasto-$PYHTON_VERSION_TO_INSTALL" \
     "$HOME/.localpython/python$PYHTON_VERSION_TO_INSTALL"; do
     [ -d "$DIR" ] && { info "Directory to remove: '$DIR'"; IS_SOMETHING_TO_CLEAN=true; }
   done
@@ -567,7 +567,7 @@ do_clean() {
     if getyesorno N "Do you want to proceed? [yN]" <&1; then
       for DIR in \
         "$HOME/.localpython/build/Python-$PYHTON_VERSION_TO_INSTALL" \
-        "$HOME/.localpython/bin/venv-seprastro-$PYHTON_VERSION_TO_INSTALL" \
+        "$HOME/.localpython/bin/venv-sephrasto-$PYHTON_VERSION_TO_INSTALL" \
         "$HOME/.localpython/python$PYHTON_VERSION_TO_INSTALL"; do
         [ -d "$DIR" ] && { rm -rf "$DIR"; }
       done
