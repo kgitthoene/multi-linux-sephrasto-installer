@@ -590,7 +590,7 @@ usage() {
 Usage: $MYNAME [OPTIONS] COMMAND [...]
 Commands:
   build           -- Download, build and prepare all packages needed by Sephrasto.
-  install         -- Install .desktop file for Sephrato.
+  install         -- Install .desktop file for Sephrasto.
   clean           -- Remove all installed stuff.
   uninstall       -- Same as clean.
 Options:
