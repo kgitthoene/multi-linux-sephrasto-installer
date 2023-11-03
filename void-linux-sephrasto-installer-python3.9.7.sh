@@ -421,7 +421,7 @@ output_in_case_of_error() {
   return $RC
 }  # output_in_case_of_error
 #
-sudo_install_packages() {
+sudo_install_void_packages() {
   # Packages to build python3:
   info "Update system ... (On a fresh system this may take a long time.)"
   { xbps-install -y -Su 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { xbps-install -y -u xbps >/dev/null 2>&1; }
@@ -432,7 +432,20 @@ sudo_install_packages() {
   # Packages to run Sephrasto
   info "Install packages to run Sephrasto ..."
   { xbps-install -y qt5 libxcb libxcb-devel xcb-util-cursor xcb-imdkit xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error
-}  # sudo_install_packages
+}  # sudo_install_void_packages
+#
+sudo_install_ubuntu_packages() {
+  # Packages to build python3:
+  info "Update system ... (On a fresh system this may take a long time.)"
+  { apt -y update 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error
+  { apt -y upgrade 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error
+  # Packages to build python
+  info "Install packages to build python ..."
+  { apt -y install build-essential binutils tar wget git xz-utils autoconf libtool libssl-dev libzip-dev libncurses-dev libreadline-dev libyaml-dev libffi-dev libx11-xcb-dev libzstd-dev libgdbm-dev liblzma-dev tk-dev libipset-dev libnsl-dev libtirpc-dev libncursesw5-dev libc6-dev libsqlite3-dev libbz2-dev libsqlite3-dev zlib1g zlib1g-dev 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error
+  # Packages to run Sephrasto
+  info "Install packages to run Sephrasto ..."
+  { apt -y install libxcb-composite0 libxcb-cursor0 libxcb-damage0 libxcb-doc libxcb-dpms0 libxcb-dri2-0 libxcb-dri3-0 libxcb-ewmh2 libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-imdkit1 libxcb-keysyms1 libxcb-present0 libxcb-randr0 libxcb-record0 libxcb-render-util0 libxcb-render0 libxcb-res0 libxcb-screensaver0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xf86dri0 libxcb-xfixes0 libxcb-xinerama0 libxcb-xinput0 libxcb-xkb1 libxcb-xrm0 libxcb-xtest0 libxcb-xv0 libxcb-xvmc0 libxcb1 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error
+}  # sudo_install_ubuntu_packages
 #
 do_with_sudo() {
   CMD="$1"
@@ -452,7 +465,7 @@ do_with_sudo() {
       exit 1
     }
     if type sudo >/dev/null 2>&1; then
-      warn "You don't have super cow powers! Try to start commands with sudo ..."
+      warn "You don't have super cow powers! Try to start commands with sudo ... CMD='$CMD'"
       sudo -H "$SHELL" "$0" - "$CMD"; RC=$?
       info "|< End of sudo command sequence."
       [ "$RC" = "0" ] || exit $RC
@@ -465,7 +478,15 @@ do_with_sudo() {
 }  # do_with_sudo
 #
 do_build() {
-  do_with_sudo sudo_install_packages
+  DISTRIBUTION="$1"; shift
+  case "$DISTRIBUTION" in
+    Void) do_with_sudo sudo_install_void_packages;;
+    Ubuntu) do_with_sudo sudo_install_ubuntu_packages;;
+    *)
+      error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
+      exit 1
+      ;;
+  esac
   #
   info "Create build directories ..."
   LOCAL_PYTHON_BUILD_DIR="$HOME/.localpython/build"
@@ -486,20 +507,46 @@ do_build() {
     rm -f "$TMPFILE"
     info "Build python version=$PYHTON_VERSION_TO_INSTALL"
     cd "Python-$PYHTON_VERSION_TO_INSTALL" ||  { error "Cannot change to directory! DIR='$LOCAL_PYTHON_BUILD_DIR/Python-$PYHTON_VERSION_TO_INSTALL'"; exit 1; }
-    info "Build python: ./configure ..."
-    unset OUTPUT_PERCENTAGE_PPERCENT
-    { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" ; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error --count 747
-    info "Build python: make"
-    unset OUTPUT_PERCENTAGE_PPERCENT
-    { make; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error --count 753
-    info "Build python: make install"
-    unset OUTPUT_PERCENTAGE_PPERCENT
-    { make install; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error --count 8096
+    #
+    case "$DISTRIBUTION" in
+      Void)
+        info "Build python: ./configure ..."
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" ; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error --count 747
+        info "Build python: make"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error --count 753
+        info "Build python: make install"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make install; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error --count 8096
+        ;;
+      Ubuntu)
+        info "Build python: ./configure ..."
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" ; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error --count 747
+        info "Build python: make"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error --count 733
+        info "Build python: make install"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make install; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error --count 8125
+        ;;
+      *)
+        error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
+        exit 1
+        ;;
+    esac
+    #
   )
   [ -f "$TMPFILE" ] && rm -f "$TMPFILE"
   (
-    cd "$LOCAL_SEPHRASTRO_DIR"
     info "Create Sephrasto python environment ..."
+    (
+      cd "$LOCAL_PYTHON_INSTALLATION_DIR"
+      ./bin/python3 -m pip install --upgrade pip
+      ./bin/python3 -m pip install --user virtualenv
+    )
+    cd "$LOCAL_SEPHRASTRO_DIR"
     "$LOCAL_PYTHON_INSTALLATION_DIR/bin/python3" -m venv "venv-sephrasto-$PYHTON_VERSION_TO_INSTALL"
     (
       cd "venv-sephrasto-$PYHTON_VERSION_TO_INSTALL"
@@ -507,20 +554,22 @@ do_build() {
       info "Download Sephrasto ..."
       [ -d Sephrasto ] || git clone https://github.com/Aeolitus/Sephrasto.git || { error "Cannot download Sephrasto! GIT CLONE"; exit 1; }
       info "Install Sephrasto requierements ..."
-      ./bin/python3 -m pip install --upgrade pip
       ./bin/pip install -r Sephrasto/requirements.txt || { error "Cannot install Sephrasto requierements! PIP INSTALL"; exit 1; }
     )
     info "Create Sephrasto .desktop file ..."
     cat > Sephrasto.desktop <<EOF
 [Desktop Entry]
+Encoding=UTF-8
 Version=1.0
 Type=Application
+GenericName=Sephrasto
 Name=Sephrasto
-Comment=
+Comment=A character generator for the DSA house rules system Ilaris.
 Exec=/bin/sh "$LOCAL_SEPHRASTRO_DIR/Sephrasto.sh"
 Icon=$LOCAL_SEPHRASTRO_DIR/venv-sephrasto-$PYHTON_VERSION_TO_INSTALL/Sephrasto/src/Sephrasto/icon_large.png
 Terminal=false
 StartupNotify=true
+Categories=Game;
 Name[de_DE]=Sephrasto
 EOF
     info "Create Sephrasto startup script ..."
@@ -540,7 +589,11 @@ do_install() {
   LOCAL_SEPHRASTRO_DIR="$HOME/.localpython/bin"
   [ -d "$LOCAL_SEPHRASTRO_DIR" ] || { error "Cannot find directory! DIR='$LOCAL_SEPHRASTRO_DIR'"; exit 1; }
   for FILE in Sephrasto.desktop; do
-    [ -f "$LOCAL_SEPHRASTRO_DIR/$FILE" ] || { error "Cannot find file! FILE='$LOCAL_SEPHRASTRO_DIR/$FILE'"; exit 1; }
+    [ -f "$LOCAL_SEPHRASTRO_DIR/$FILE" ] || {
+      error "Cannot find file! FILE='$LOCAL_SEPHRASTRO_DIR/$FILE'"
+      info "Try \`$MYNAME build\` first!"
+      exit 1
+    }
   done
   [ -d "$HOME/.local/share/applications" ] || mkdir -p "$HOME/.local/share/applications" || { error "Cannot create directory! DIR='$HOME/.local/share/applications'"; exit 1; }
   cp "$LOCAL_SEPHRASTRO_DIR/Sephrasto.desktop" "$HOME/.local/share/applications" || { error "Cannot copy file! FROM='$LOCAL_SEPHRASTRO_DIR/Sephrasto.desktop' TO-DIR='$HOME/.local/share/applications'"; exit 1; }
@@ -585,6 +638,17 @@ do_clean() {
   return 0
 }  # do_clean
 #
+do_run() {
+  LOCAL_SEPHRASTRO_DIR="$HOME/.localpython/bin"
+  [ -d "$LOCAL_SEPHRASTRO_DIR" ] || { error "Cannot find directory! DIR='$LOCAL_SEPHRASTRO_DIR'"; exit 1; }
+  [ -r "$LOCAL_SEPHRASTRO_DIR/Sephrasto.sh" ] || {
+    error "Cannot find file! FILE='$LOCAL_SEPHRASTRO_DIR/Sephrasto.sh'"
+    info "Try \`$MYNAME build\` first!"
+    exit 1
+  }
+  exec /bin/sh "$LOCAL_SEPHRASTRO_DIR/Sephrasto.sh"
+}  # do_run
+#
 usage() {
   cat >&2 <<EOF
 Usage: $MYNAME [OPTIONS] COMMAND [...]
@@ -593,6 +657,8 @@ Commands:
   install         -- Install .desktop file for Sephrasto.
   clean           -- Remove all installed stuff.
   uninstall       -- Same as clean.
+  run             -- Start Sephrasto.
+  start           -- Same as run.
 Options:
   -d, --debug     -- Output debug messages.
   -h, --help      -- Print this text.
@@ -602,7 +668,7 @@ EOF
 #----------
 # Check restart of this script.
 #
-check_tools git wget bc printf tar sed basename dirname
+check_tools git wget bc printf tar sed basename dirname sudo
 [ "$1" = "-" ] && { SCRIPT_OPT_SUDORESTART=true; shift; }
 #
 #----------
@@ -690,14 +756,16 @@ debug "DIST_NAME='$DIST_NAME' DIST_VERSION='$DIST_VERSION'"
 #----------
 # Do commands:
 case "$DIST_NAME" in
-  Void)
-    PYHTON_VERSION_TO_INSTALL="3.9.7"
+  Void|Ubuntu)
+    export PYHTON_VERSION_TO_INSTALL="3.9.7"
     cat <&6 | while read ARG; do
       case "$ARG" in
-        build) do_build; RC=$?; [ $RC = 0 ] || exit $RC;;
+        build) do_build "$DIST_NAME"; RC=$?; [ $RC = 0 ] || exit $RC;;
         install) do_install; RC=$?; [ $RC = 0 ] || exit $RC;;
         clean|uninstall) do_clean; RC=$?; [ $RC = 0 ] || exit $RC;;
-        sudo_install_packages) sudo_install_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
+        run|start) do_run; RC=$?; [ $RC = 0 ] || exit $RC;;
+        sudo_install_void_packages) sudo_install_void_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
+        sudo_install_ubuntu_packages) sudo_install_ubuntu_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
         *) error "Unknown command! CMD='$ARG'"; exit 10;;
       esac
     done
