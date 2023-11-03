@@ -26,7 +26,8 @@ The tests were carried out on fresh installations.
 | Linux Distribution | Version                              | Test Result |
 | ----------         | ----------                           | ----------  |
 | Void Linux         | `x86_64-20230628-xfce glibc`         | WORKING     |
-| Xubuntu            | `22.04.3 LTS`                        | WORKING     |
+| Xubuntu            | `22.04.3-desktop-amd64 LTS`          | WORKING     |
+| Xubuntu            | `23.10-desktop-amd64`                | WORKING     |
 | Void Linux         | `x86_64-musl-20230628-xfce musl`[^1] | FAIL        |
 
 [^1]: There seems to be no distribution of [PySide6](https://pypi.org/project/PySide6/) for [musl](https://www.musl-libc.org/). :confused:
