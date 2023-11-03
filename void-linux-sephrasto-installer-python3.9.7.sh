@@ -428,7 +428,7 @@ sudo_install_void_packages() {
   { xbps-install -y -Su 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error
   # Packages to build python
   info "Install packages to build python ..."
-  { xbps-install -y base-devel binutils tar wget git xz openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb-devel libzstd-devel gdbm-devel liblzma-devel tk-devel libipset-devel libnsl-devel libtirpc-devel; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error
+  { xbps-install -y base-devel binutils tar bc wget git xz openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb-devel libzstd-devel gdbm-devel liblzma-devel tk-devel libipset-devel libnsl-devel libtirpc-devel; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error
   # Packages to run Sephrasto
   info "Install packages to run Sephrasto ..."
   { xbps-install -y qt5 libxcb libxcb-devel xcb-util-cursor xcb-imdkit xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error
@@ -441,7 +441,7 @@ sudo_install_ubuntu_packages() {
   { apt -y upgrade 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error
   # Packages to build python
   info "Install packages to build python ..."
-  { apt -y install build-essential binutils tar wget git xz-utils autoconf libtool libssl-dev libzip-dev libncurses-dev libreadline-dev libyaml-dev libffi-dev libx11-xcb-dev libzstd-dev libgdbm-dev liblzma-dev tk-dev libipset-dev libnsl-dev libtirpc-dev libncursesw5-dev libc6-dev libsqlite3-dev libbz2-dev libsqlite3-dev zlib1g zlib1g-dev 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error
+  { apt -y install build-essential binutils bc tar wget git xz-utils autoconf libtool libssl-dev libzip-dev libncurses-dev libreadline-dev libyaml-dev libffi-dev libx11-xcb-dev libzstd-dev libgdbm-dev liblzma-dev tk-dev libipset-dev libnsl-dev libtirpc-dev libncursesw5-dev libc6-dev libsqlite3-dev libbz2-dev libsqlite3-dev zlib1g zlib1g-dev 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error
   # Packages to run Sephrasto
   info "Install packages to run Sephrasto ..."
   { apt -y install libxcb-composite0 libxcb-cursor0 libxcb-damage0 libxcb-doc libxcb-dpms0 libxcb-dri2-0 libxcb-dri3-0 libxcb-ewmh2 libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-imdkit1 libxcb-keysyms1 libxcb-present0 libxcb-randr0 libxcb-record0 libxcb-render-util0 libxcb-render0 libxcb-res0 libxcb-screensaver0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xf86dri0 libxcb-xfixes0 libxcb-xinerama0 libxcb-xinput0 libxcb-xkb1 libxcb-xrm0 libxcb-xtest0 libxcb-xv0 libxcb-xvmc0 libxcb1 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error
@@ -668,7 +668,7 @@ EOF
 #----------
 # Check restart of this script.
 #
-check_tools bc printf tar sed basename dirname sudo
+check_tools printf tar sed basename dirname sudo
 [ "$1" = "-" ] && { SCRIPT_OPT_SUDORESTART=true; shift; }
 #
 #----------
