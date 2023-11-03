@@ -668,7 +668,7 @@ EOF
 #----------
 # Check restart of this script.
 #
-check_tools git wget bc printf tar sed basename dirname sudo
+check_tools bc printf tar sed basename dirname sudo
 [ "$1" = "-" ] && { SCRIPT_OPT_SUDORESTART=true; shift; }
 #
 #----------
