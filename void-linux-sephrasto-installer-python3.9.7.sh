@@ -758,6 +758,10 @@ debug "DIST_NAME='$DIST_NAME' DIST_VERSION='$DIST_VERSION'"
 # Do commands:
 case "$DIST_NAME" in
   Void|Ubuntu)
+    is_glibc || {
+      error "Sorry, you should have glibc (https://www.gnu.org/software/libc/) to run Sephrasto!"
+      exit 1
+    }
     export PYHTON_VERSION_TO_INSTALL="3.9.7"
     cat <&6 | while read ARG; do
       case "$ARG" in
