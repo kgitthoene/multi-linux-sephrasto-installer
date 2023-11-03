@@ -1,6 +1,8 @@
 # void-linux-sephrasto-installer
 Bourne shell script to install [Sephrasto](https://github.com/Aeolitus/Sephrasto) on [Void Linux](https://voidlinux.org/) - `glibc` variant. Doesn't work with `musl`, see Tests.
 
+It also works on [Ubuntu](https://ubuntu.com/).
+
 ## Table of Contents
 
 ### Download of the Installer
@@ -23,6 +25,8 @@ Tested with a fresh installed Void Linux `x86_64-20230628-xfce glibc`.
 
 Doesn't work with Void Linux `x86_64-musl-20230628-xfce musl`. :sob:
 There seems to be no distribution of [PySide6](https://pypi.org/project/PySide6/) for [musl](https://www.musl-libc.org/). :confused:
+
+Tested with a fresh installed Xubuntu `22.04.3 LTS`.
 
 ### Usage
 
