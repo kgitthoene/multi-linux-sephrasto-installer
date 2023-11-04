@@ -71,7 +71,7 @@ Copies the `Sephrasto.desktop` file to `~/.local/share/applications`.[^2]
 
 Start Sephrasto from command line.[^2]
 
-[2^]: This only works if you have previously run the build command.
+[^2]: This only works if you have previously run the build command.
 
 #### clean
 
