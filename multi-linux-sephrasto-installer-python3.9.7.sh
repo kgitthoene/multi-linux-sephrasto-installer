@@ -423,6 +423,40 @@ output_in_case_of_error() {
   return $RC
 }  # output_in_case_of_error
 #
+get_dists() {
+  GET_DISTS_SCRIPT_OPT_CHECK=""
+  while [ "${#}" != "0" ]; do
+    SCRIPT_OPTION="true"
+    case "${1}" in
+      --check) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_CHECK="$1"; else error "Missing argument for option! OPTION='${1}'"; exit 1; fi; shift; continue;;
+    esac
+    if [ "$SCRIPT_OPTION" = "true" ]; then
+      flag="${1#?}"
+      while [ -n "${flag}" ]; do
+        case "${flag}" in
+          c) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_CHECK="$1"; else error "Missing argument for option! OPTION='-${flag}'"; exit 1; fi;;
+          *) error "Invalid option! OPTION='${flag%"${flag#?}"}'"; exit 1;;
+        esac
+        flag="${flag#?}"
+      done
+    fi
+    shift
+  done
+  #
+  if [ -n "$GET_DISTS_SCRIPT_OPT_CHECK" ]; then
+    # Check if given distribution is valid.
+    get_dists | { VALID_DISTRIBUTION=false; while read DISTRIBUTION; do
+        [ "$GET_DISTS_SCRIPT_OPT_CHECK" = "$DISTRIBUTION" ] && { VALID_DISTRIBUTION=true; break; }
+      done; }
+    RC=$?
+    return $RC
+  else
+    # Echo all known distributions.
+    for D in Void Ubuntu 'Debian GNU/Linux' Arch 'Garuda Linux'; do echo "$D"; done
+  fi
+  return 0
+}  # get_dists
+#
 sudo_install_void_packages() {
   # Packages to build python3:
   info "Update system ... (On a fresh system this may take a long time.)"
@@ -707,40 +741,6 @@ Options:
   -h, --help      -- Print this text.
 EOF
 }
-#
-get_dists() {
-  GET_DISTS_SCRIPT_OPT_CHECK=""
-  while [ "${#}" != "0" ]; do
-    SCRIPT_OPTION="true"
-    case "${1}" in
-      --check) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_CHECK="$1"; else error "Missing argument for option! OPTION='${1}'"; exit 1; fi; shift; continue;;
-    esac
-    if [ "$SCRIPT_OPTION" = "true" ]; then
-      flag="${1#?}"
-      while [ -n "${flag}" ]; do
-        case "${flag}" in
-          c) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_CHECK="$1"; else error "Missing argument for option! OPTION='-${flag}'"; exit 1; fi;;
-          *) error "Invalid option! OPTION='${flag%"${flag#?}"}'"; exit 1;;
-        esac
-        flag="${flag#?}"
-      done
-    fi
-    shift
-  done
-  #
-  if [ -n "$GET_DISTS_SCRIPT_OPT_CHECK" ]; then
-    # Check if given distribution is valid.
-    get_dists | { VALID_DISTRIBUTION=false; while read DISTRIBUTION; do
-        [ "$GET_DISTS_SCRIPT_OPT_CHECK" = "$DISTRIBUTION" ] && { VALID_DISTRIBUTION=true; break; }
-      done; }
-    RC=$?
-    return $RC
-  else
-    # Echo all known distributions.
-    for D in Void Ubuntu 'Debian GNU/Linux' Arch 'Garuda Linux'; do echo "$D"; done
-  fi
-  return 0
-}  # get_dists
 #
 do_list_distributions() {
   info "Valid distributions:"
