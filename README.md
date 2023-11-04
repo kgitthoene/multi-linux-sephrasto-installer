@@ -1,7 +1,7 @@
 # void-linux-sephrasto-installer
 Bourne shell script to install [Sephrasto](https://github.com/Aeolitus/Sephrasto) on [Void Linux](https://voidlinux.org/) - `glibc` variant. Doesn't work with `musl`, see Tests.
 
-**It also works on [Ubuntu](https://ubuntu.com/)/[Debian](https://www.debian.org/).**
+**It also works on [Ubuntu](https://ubuntu.com/)/[Debian](https://www.debian.org/) and [Arch Linux](https://archlinux.org/).**
 
 A separate Python version is installed, which does not interfere with the Python installation of the operating system.
 
@@ -25,13 +25,14 @@ Download, build and install Python 3.9.7 and Sephrasto.
 
 The tests were carried out on fresh installations.
 
-| Linux Distribution | Version                              | Test Result |
-| ----------         | ----------                           | ----------  |
-| Void Linux         | `x86_64-20230628-xfce glibc`         | WORKING     |
-| Xubuntu            | `22.04.3-desktop-amd64 LTS`          | WORKING     |
-| Xubuntu            | `23.10-desktop-amd64`                | WORKING     |
-| MX Linux           | `23.1_x64`                           | WORKING     |
-| Void Linux         | `x86_64-musl-20230628-xfce musl`[^1] | FAIL        |
+| Linux Distribution                        | Version                              | Type        | Test Result |
+| ----------                                | ----------                           | ----------  | ----------  |
+| [Void Linux](https://voidlinux.org/)      | `x86_64-20230628-xfce glibc`         | Void        | WORKING     |
+| [Xubuntu](https://xubuntu.org/)           | `22.04.3-desktop-amd64 LTS`          | Ubuntu      | WORKING     |
+| [Xubuntu](https://xubuntu.org/)           | `23.10-desktop-amd64`                | Ubuntu      | WORKING     |
+| [MX Linux](https://mxlinux.org/)          | `23.1_x64`                           | Debian      | WORKING     |
+| [Garuda Linux](https://garudalinux.org/)  | `garuda-xfce-linux-lts-231029`       | Arch        | WORKING     |
+| [Void Linux](https://voidlinux.org/)      | `x86_64-musl-20230628-xfce musl`[^1] | Void        | FAIL        |
 
 [^1]: There seems to be no distribution of [PySide6](https://pypi.org/project/PySide6/) for [musl](https://www.musl-libc.org/). :confused:
 

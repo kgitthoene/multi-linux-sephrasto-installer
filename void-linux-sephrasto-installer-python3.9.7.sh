@@ -449,6 +449,15 @@ sudo_install_ubuntu_packages() {
   { apt -y install qtcreator qtbase5-dev qt5-qmake libxcb-composite0 libxcb-cursor0 libxcb-damage0 libxcb-doc libxcb-dpms0 libxcb-dri2-0 libxcb-dri3-0 libxcb-ewmh2 libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-imdkit1 libxcb-keysyms1 libxcb-present0 libxcb-randr0 libxcb-record0 libxcb-render-util0 libxcb-render0 libxcb-res0 libxcb-screensaver0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xf86dri0 libxcb-xfixes0 libxcb-xinerama0 libxcb-xinput0 libxcb-xkb1 libxcb-xrm0 libxcb-xtest0 libxcb-xv0 libxcb-xvmc0 libxcb1 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed to install packages to run Sephrasto!"; exit 1; }
 }  # sudo_install_ubuntu_packages
 #
+sudo_install_arch_packages() {
+  # Packages to build python3:
+  info "Update system ... (On a fresh system this may take a long time.)"
+  pacman --noconfirm -Syu || { error "Failed: pacman -Syu"; exit 1; }
+  # Packages to build python
+  info "Install packages to build python and to run Sephrasto ..."
+  pacman --noconfirm --needed -S base-devel binutils bc tar wget git xz autoconf libtool openssl zlib ncurses readline libyaml libffi libxcb zstd gdbm lzlib tk ipset libnsl libtirpc sqlite zlib  qtcreator qt5-base libxcb xcb-util xcb-util-cursor xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
+}  # sudo_install_arch_packages
+#
 do_with_sudo() {
   CMD="$1"
   [ -z "$CMD" ] && {
@@ -484,6 +493,7 @@ do_build() {
   case "$DISTRIBUTION" in
     Void) do_with_sudo sudo_install_void_packages || exit 1;;
     Ubuntu|'Debian GNU/Linux') do_with_sudo sudo_install_ubuntu_packages || exit 1;;
+    Arch|'Garuda Linux') do_with_sudo sudo_install_arch_packages || exit 1;;
     *)
       error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
       exit 1
@@ -532,6 +542,17 @@ do_build() {
         info "Build python: make install"
         unset OUTPUT_PERCENTAGE_PPERCENT
         { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8125 || { error "Failed: make install"; exit 1; }
+        ;;
+      Arch|'Garuda Linux')
+        info "Build python: ./configure ..."
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 746 || { error "Failed: ./configure ..."; exit 1; }
+        info "Build python: make"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 776 || { error "Failed: make"; exit 1; }
+        info "Build python: make install"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8119 || { error "Failed: make install"; exit 1; }
         ;;
       *)
         error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
@@ -716,7 +737,7 @@ get_dists() {
     return $RC
   else
     # Echo all known distributions.
-    for D in Void Ubuntu 'Debian GNU/Linux'; do echo "$D"; done
+    for D in Void Ubuntu 'Debian GNU/Linux' Arch 'Garuda Linux'; do echo "$D"; done
   fi
   return 0
 }  # get_dists
@@ -846,6 +867,7 @@ cat <&6 | while read ARG; do
     run|start) do_run; RC=$?; [ $RC = 0 ] || exit $RC;;
     sudo_install_void_packages) sudo_install_void_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
     sudo_install_ubuntu_packages) sudo_install_ubuntu_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
+    sudo_install_arch_packages) sudo_install_arch_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
     list) do_list_distributions; RC=$?; [ $RC = 0 ] || exit $RC;;
     *) error "Unknown command! CMD='$ARG'"; exit 10;;
   esac
