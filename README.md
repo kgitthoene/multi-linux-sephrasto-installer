@@ -18,7 +18,7 @@ wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installe
 Download, build and install Python 3.9.7 and Sephrasto.
 
 ```
-/bin/sh ./void-linux-sephrasto-installer-python3.9.7.sh build install
+/bin/sh ./multi-linux-sephrasto-installer-python3.9.7.sh build install
 ```
 
 ### Tests
@@ -39,7 +39,7 @@ The tests were carried out on fresh installations.
 ### Usage
 
 ```
-Usage: void-linux-sephrasto-installer-python3.9.7.sh [OPTIONS] COMMAND [...]
+Usage: multi-linux-sephrasto-installer-python3.9.7.sh [OPTIONS] COMMAND [...]
 Commands:
   build           -- Download, build and prepare all packages needed by Sephrasto.
   install         -- Install .desktop file for Sephrasto.
