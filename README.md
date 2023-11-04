@@ -1,7 +1,7 @@
-# void-linux-sephrasto-installer
+# multi-linux-sephrasto-installer
 Bourne shell script to install [Sephrasto](https://github.com/Aeolitus/Sephrasto) on [Void Linux](https://voidlinux.org/) - `glibc` variant. Doesn't work with `musl`, see Tests.
 
-**It also works on [Ubuntu](https://ubuntu.com/)/[Debian](https://www.debian.org/) and [Arch Linux](https://archlinux.org/).**
+It also works on [Ubuntu](https://ubuntu.com/)/[Debian](https://www.debian.org/) and [Arch Linux](https://archlinux.org/).
 
 A separate Python version is installed, which does not interfere with the Python installation of the operating system.
 
