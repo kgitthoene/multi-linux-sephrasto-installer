@@ -536,7 +536,7 @@ do_build() {
   case "$DISTRIBUTION" in
     Void) do_with_sudo sudo_install_void_packages || exit 1;;
     Ubuntu|'Debian GNU/Linux') do_with_sudo sudo_install_ubuntu_packages || exit 1;;
-    Arch|'Garuda Linux') do_with_sudo sudo_install_arch_packages || exit 1;;
+    Arch|'Garuda Linux'|'Manjaro Linux') do_with_sudo sudo_install_arch_packages || exit 1;;
     Fedora|'Fedora Linux') do_with_sudo sudo_install_fedora_packages || exit 1;;
     *)
       error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
@@ -587,7 +587,7 @@ do_build() {
         unset OUTPUT_PERCENTAGE_PPERCENT
         { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8125 || { error "Failed: make install"; exit 1; }
         ;;
-      Arch|'Garuda Linux')
+      Arch|'Garuda Linux'|'Manjaro Linux')
         info "Build python: ./configure ..."
         unset OUTPUT_PERCENTAGE_PPERCENT
         { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 746 || { error "Failed: ./configure ..."; exit 1; }
