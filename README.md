@@ -10,7 +10,7 @@ A separate Python version is installed, which does not interfere with the Python
 ### Download of the Installer
 Download the installer.
 ```
-wget https://raw.githubusercontent.com/kgitthoene/void-linux-sephrasto-installer/master/void-linux-sephrasto-installer-python3.9.7.sh
+wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/multi-linux-sephrasto-installer-python3.9.7.sh
 ```
 
 ### Example
