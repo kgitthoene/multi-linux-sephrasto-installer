@@ -483,7 +483,7 @@ do_build() {
   DISTRIBUTION="$1"; shift
   case "$DISTRIBUTION" in
     Void) do_with_sudo sudo_install_void_packages || exit 1;;
-    Ubuntu) do_with_sudo sudo_install_ubuntu_packages || exit 1;;
+    Ubuntu|'Debian GNU/Linux') do_with_sudo sudo_install_ubuntu_packages || exit 1;;
     *)
       error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
       exit 1
@@ -522,7 +522,7 @@ do_build() {
         unset OUTPUT_PERCENTAGE_PPERCENT
         { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8096 || { error "Failed: make install"; exit 1; }
         ;;
-      Ubuntu)
+      Ubuntu|'Debian GNU/Linux')
         info "Build python: ./configure ..."
         unset OUTPUT_PERCENTAGE_PPERCENT
         { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 747 || { error "Failed: ./configure ..."; exit 1; }
@@ -538,16 +538,20 @@ do_build() {
         exit 1
         ;;
     esac
-    #
+    exit 0
   )
+  RC=$?
   [ -f "$TMPFILE" ] && rm -f "$TMPFILE"
+  [ $RC = 0 ] || exit 1
   (
     info "Create Sephrasto python environment ..."
     (
       cd "$LOCAL_PYTHON_INSTALLATION_DIR"
       ./bin/python3 -m pip install --upgrade pip
       ./bin/python3 -m pip install virtualenv
+      exit 0
     )
+    RC=$?; [ $RC = 0 ] || exit 1
     cd "$LOCAL_SEPHRASTRO_DIR"
     "$LOCAL_PYTHON_INSTALLATION_DIR/bin/python3" -m venv "venv-sephrasto-$PYHTON_VERSION_TO_INSTALL"
     (
@@ -558,7 +562,9 @@ do_build() {
       [ -d Sephrasto ] || git clone https://github.com/Aeolitus/Sephrasto.git || { error "Cannot download Sephrasto! GIT CLONE"; exit 1; }
       info "Install Sephrasto requirements ..."
       ./bin/pip install -r Sephrasto/requirements.txt || { error "Cannot install Sephrasto requierements! PIP INSTALL"; exit 1; }
+      exit 0
     )
+    RC=$?; [ $RC = 0 ] || exit 1
     info "Create Sephrasto .desktop file ..."
     cat > Sephrasto.desktop <<EOF
 [Desktop Entry]
@@ -590,8 +596,11 @@ fi
 EOF
     info "Install Sephrasto with \`$MYNAME install\`"
     info "Start Sephrasto with \`$MYNAME run\`"
+    exit 0
   )
+  RC=$?
   [ -f "$TMPFILE" ] && rm -f "$TMPFILE"
+  [ $RC = 0 ] || return 1
   return 0
 }  # do_build
 #
@@ -766,7 +775,7 @@ debug "DIST_NAME='$DIST_NAME' DIST_VERSION='$DIST_VERSION'"
 #----------
 # Do commands:
 case "$DIST_NAME" in
-  Void|Ubuntu)
+  Void|Ubuntu|'Debian GNU/Linux')
     is_glibc || {
       error "Sorry, you should have glibc (https://www.gnu.org/software/libc/) to run Sephrasto!"
       exit 1
