@@ -1,5 +1,5 @@
 # multi-linux-sephrasto-installer
-Bourne shell script to install [Sephrasto](https://github.com/Aeolitus/Sephrasto) on [Void Linux](https://voidlinux.org/) - `glibc` variant. Doesn't work with `musl`, see Tests.
+Bourne shell script to install [Sephrasto](https://github.com/Aeolitus/Sephrasto) on [Void Linux](https://voidlinux.org/) - `glibc` variant. Doesn't work with `musl`, see tests.
 
 It also works on [Ubuntu](https://ubuntu.com/)/[Debian](https://www.debian.org/), [Fedora](https://getfedora.org/) and [Arch Linux](https://archlinux.org/).
 
