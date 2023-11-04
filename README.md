@@ -46,7 +46,10 @@ Commands:
   uninstall       -- Same as clean.
   run             -- Start Sephrasto.
   start           -- Same as run.
+  list            -- Show all known supported distributions.
 Options:
+  -D DISTRIBUTION-NAME, --distribution DISTRIBUTION-NAME
+                  -- Overwrite the OS given distribution name.
   -d, --debug     -- Output debug messages.
   -h, --help      -- Print this text.
 ```
