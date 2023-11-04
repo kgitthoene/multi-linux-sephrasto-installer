@@ -1,7 +1,7 @@
 # multi-linux-sephrasto-installer
 Bourne shell script to install [Sephrasto](https://github.com/Aeolitus/Sephrasto) on [Void Linux](https://voidlinux.org/) - `glibc` variant. Doesn't work with `musl`, see Tests.
 
-It also works on [Ubuntu](https://ubuntu.com/)/[Debian](https://www.debian.org/) and [Arch Linux](https://archlinux.org/).
+It also works on [Ubuntu](https://ubuntu.com/)/[Debian](https://www.debian.org/), [Fedora](https://getfedora.org/) and [Arch Linux](https://archlinux.org/).
 
 A separate Python version is installed, which does not interfere with the Python installation of the operating system.
 
@@ -32,6 +32,7 @@ The tests were carried out on fresh installations.
 | [Xubuntu](https://xubuntu.org/)           | `23.10-desktop-amd64`                | Ubuntu      | WORKING     |
 | [MX Linux](https://mxlinux.org/)          | `23.1_x64`                           | Debian      | WORKING     |
 | [Garuda Linux](https://garudalinux.org/)  | `garuda-xfce-linux-lts-231029`       | Arch        | WORKING     |
+| [Fedora](https://getfedora.org/)          | `x86_64-38-1.6`                      | Fedora      | WORKING     |
 | [Void Linux](https://voidlinux.org/)      | `x86_64-musl-20230628-xfce musl`[^1] | Void        | FAIL        |
 
 [^1]: There seems to be no distribution of [PySide6](https://pypi.org/project/PySide6/) for [musl](https://www.musl-libc.org/). :confused:
