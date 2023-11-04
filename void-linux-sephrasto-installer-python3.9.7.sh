@@ -3,7 +3,7 @@
 #
 #----------
 # Copyright (c) 2023 Kai Thöne
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -12,7 +12,7 @@
 # furnished to do so, subject to the following conditions:
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -678,11 +678,57 @@ Commands:
   uninstall       -- Same as clean.
   run             -- Start Sephrasto.
   start           -- Same as run.
+  list            -- Show all known supported distributions.
 Options:
+  -D DISTRIBUTION-NAME, --distribution DISTRIBUTION-NAME
+                  -- Overwrite the OS given distribution name.
   -d, --debug     -- Output debug messages.
   -h, --help      -- Print this text.
 EOF
 }
+#
+get_dists() {
+  GET_DISTS_SCRIPT_OPT_CHECK=""
+  while [ "${#}" != "0" ]; do
+    SCRIPT_OPTION="true"
+    case "${1}" in
+      --check) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_CHECK="$1"; else error "Missing argument for option! OPTION='${1}'"; exit 1; fi; shift; continue;;
+    esac
+    if [ "$SCRIPT_OPTION" = "true" ]; then
+      flag="${1#?}"
+      while [ -n "${flag}" ]; do
+        case "${flag}" in
+          c) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_CHECK="$1"; else error "Missing argument for option! OPTION='-${flag}'"; exit 1; fi;;
+          *) error "Invalid option! OPTION='${flag%"${flag#?}"}'"; exit 1;;
+        esac
+        flag="${flag#?}"
+      done
+    fi
+    shift
+  done
+  #
+  if [ -n "$GET_DISTS_SCRIPT_OPT_CHECK" ]; then
+    # Check if given distribution is valid.
+    get_dists | { VALID_DISTRIBUTION=false; while read DISTRIBUTION; do
+        [ "$GET_DISTS_SCRIPT_OPT_CHECK" = "$DISTRIBUTION" ] && { VALID_DISTRIBUTION=true; break; }
+      done; }
+    RC=$?
+    return $RC
+  else
+    # Echo all known distributions.
+    for D in Void Ubuntu 'Debian GNU/Linux'; do echo "$D"; done
+  fi
+  return 0
+}  # get_dists
+#
+do_list_distributions() {
+  info "Valid distributions:"
+  get_dists | while read DISTRIBUTION; do
+    info "  $DISTRIBUTION"
+  done
+  info "Your OS is '$OS_DIST_NAME'."
+  return 0
+}  # do_list_distributions
 #
 #----------
 # Check restart of this script.
@@ -704,6 +750,7 @@ SCRIPT_OPT_RM_MULTIPLE_EMPTY_LINES=false
 SCRIPT_OPT_LANGUAGE="$OCR_LANGUAGE"
 SCRIPT_ARGS_HERE="false"
 SCRIPT_OPT_PIDFN="/var/run/$MYNAE.pid"
+SCRIPT_OPT_DIST_NAME=""
 open56
 while [ "${#}" != "0" ]; do
   SCRIPT_OPTION="true"
@@ -713,10 +760,10 @@ while [ "${#}" != "0" ]; do
     --quit) SCRIPT_OPT_QUIT=true; shift; continue;;
     --verbose) SCRIPT_OPT_VERBOSE=true; shift; continue;;
     --pid-file) if [ -n "$2" ]; then shift; SCRIPT_OPT_PIDFN="$1"; else error "Missing argument for option! OPTION='${1}'"; exit 1; fi; shift; continue;;
-    --invalid)
-      log "'${1}' invalid. Use ${1}=... instead"; exit 1; continue;;
+    --distribution) if [ -n "$2" ]; then shift; SCRIPT_OPT_DIST_NAME="$1"; else error "Missing argument for option! OPTION='${1}'"; exit 1; fi; shift; continue;;
+    --log-invalid) log "'${1}' invalid. Use ${1}=... instead"; exit 1; continue;;
     --help) usage; exit 0;;
-    --*) log "invalid option '${1}'"; usage 1; exit 1;;
+    --*) error "Invalid option. OPTION='${1}'"; usage 1; exit 1;;
     # Posix getopt stops after first non-option
     -*);;
     *) echo "$1" >&5; SCRIPT_OPTION="false"; SCRIPT_ARGS_HERE="true";;  # Put normal args to tempfile.
@@ -729,11 +776,12 @@ while [ "${#}" != "0" ]; do
         c*) info "CLEAN"; exit $? ;;
         d*) SCRIPT_OPT_DEBUG=true;;
         l*) SCRIPT_OPT_LOCAL=true;;
+        D) if [ -n "$2" ]; then shift; SCRIPT_OPT_DIST_NAME="$1"; else error "Missing argument for option! OPTION='-${flag}'"; exit 1; fi;;
         P) if [ -n "$2" ]; then shift; SCRIPT_OPT_PIDFN="$1"; else error "Missing argument for option! OPTION='-${flag}'"; exit 1; fi;;
         C*) info "BIG-CLEAN"; exit $? ;;
         q*) SCRIPT_OPT_QUIT=true;;
         Q*) exit 0;;
-        *) : ;;  # log "invalid option -- '${flag%"${flag#?}"}'"; usage 1;;
+        *) error "Invalid option! OPTION='-${flag%"${flag#?}"}'"; usage 1; exit 1;;
       esac
       flag="${flag#?}"
     done
@@ -769,35 +817,39 @@ DIST_VERSION=`cat /etc/*-release 2>/dev/null | sed -e 's/^VERSION_ID=\(.*\)/\1/'
   }
 }
 [ -z "$DIST_NAME" ] && { DIST_NAME="(unknown)"; }
+OS_DIST_NAME="$DIST_NAME"
 #
+[ -n "$SCRIPT_OPT_DIST_NAME" ] && {
+  DIST_NAME="$SCRIPT_OPT_DIST_NAME"
+  DIST_VERSION=""
+}
 debug "DIST_NAME='$DIST_NAME' DIST_VERSION='$DIST_VERSION'"
+# Check distribution.
+get_dists --check "$DIST_NAME" || {
+  error "Invalid or unknown distribution! DISTRIBUTION='$DIST_NAME'"
+  error "List all valid distributions with command \`list\`."
+  exit 1
+}
+is_glibc || {
+  error "Sorry, you should have glibc (https://www.gnu.org/software/libc/) to run Sephrasto!"
+  exit 1
+}
 #
 #----------
 # Do commands:
-case "$DIST_NAME" in
-  Void|Ubuntu|'Debian GNU/Linux')
-    is_glibc || {
-      error "Sorry, you should have glibc (https://www.gnu.org/software/libc/) to run Sephrasto!"
-      exit 1
-    }
-    export PYHTON_VERSION_TO_INSTALL="3.9.7"
-    cat <&6 | while read ARG; do
-      case "$ARG" in
-        build) do_build "$DIST_NAME"; RC=$?; [ $RC = 0 ] || exit $RC;;
-        install) do_install; RC=$?; [ $RC = 0 ] || exit $RC;;
-        clean|uninstall) do_clean; RC=$?; [ $RC = 0 ] || exit $RC;;
-        run|start) do_run; RC=$?; [ $RC = 0 ] || exit $RC;;
-        sudo_install_void_packages) sudo_install_void_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
-        sudo_install_ubuntu_packages) sudo_install_ubuntu_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
-        *) error "Unknown command! CMD='$ARG'"; exit 10;;
-      esac
-    done
-    ;;
-  *)
-    error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
-    exit 1
-    ;;
-esac
+export PYHTON_VERSION_TO_INSTALL="3.9.7"
+cat <&6 | while read ARG; do
+  case "$ARG" in
+    build) do_build "$DIST_NAME"; RC=$?; [ $RC = 0 ] || exit $RC;;
+    install) do_install; RC=$?; [ $RC = 0 ] || exit $RC;;
+    clean|uninstall) do_clean; RC=$?; [ $RC = 0 ] || exit $RC;;
+    run|start) do_run; RC=$?; [ $RC = 0 ] || exit $RC;;
+    sudo_install_void_packages) sudo_install_void_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
+    sudo_install_ubuntu_packages) sudo_install_ubuntu_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
+    list) do_list_distributions; RC=$?; [ $RC = 0 ] || exit $RC;;
+    *) error "Unknown command! CMD='$ARG'"; exit 10;;
+  esac
+done
 close56
 #
 if [ "$SCRIPT_ARGS_HERE" = false ]; then
