@@ -31,7 +31,7 @@ The tests were carried out on fresh installations.
 | [Xubuntu](https://xubuntu.org/)           | `22.04.3-desktop-amd64 LTS`          | Ubuntu      | WORKING     |
 | [Xubuntu](https://xubuntu.org/)           | `23.10-desktop-amd64`                | Ubuntu      | WORKING     |
 | [MX Linux](https://mxlinux.org/)          | `23.1_x64`                           | Debian      | WORKING     |
-| [Garuda Linux](https://garudalinux.org/)  | `garuda-xfce-linux-lts-231029`       | Arch        | WORKING     |
+| [Garuda Linux](https://garudalinux.org/)  | `xfce-linux-lts-231029`              | Arch        | WORKING     |
 | [Fedora](https://getfedora.org/)          | `x86_64-38-1.6`                      | Fedora      | WORKING     |
 | [Manjaro Linux](https://manjaro.org/)     | `xfce-23.0.4-231015-linux65`         | Arch        | WORKING     |
 | [Void Linux](https://voidlinux.org/)      | `x86_64-musl-20230628-xfce musl`[^1] | Void        | FAIL        |
