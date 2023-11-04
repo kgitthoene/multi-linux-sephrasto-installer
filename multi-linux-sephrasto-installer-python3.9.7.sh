@@ -348,11 +348,11 @@ trap at_exit EXIT HUP INT QUIT TERM
 # Internal Script Functions
 #
 calc() { printf "%s\n" "$@" | bc -l; }
-calc_to_i() { printf "%.0f\n" "$@"; }
+calc_to_i() { echo "($@+0.5)/1" | bc; }
 #
 output_percentage() {
   PERCENT="$1"
-  PPERCENT=`printf "%.0f" $PERCENT`
+  PPERCENT=`calc_to_i "$PERCENT"`
   [ `calc "$PPERCENT>100"` = 1 ] && PPERCENT=100
   [ "$OUTPUT_PERCENTAGE_PPERCENT" = "$PPERCENT" ] || {
     PCOUNT=`calc "$PERCENT/10"`
@@ -367,7 +367,7 @@ output_percentage() {
       echo -n " " >&2
       COUNT=`calc "$COUNT+1"`
     done
-    OUTPUT_PERCENTAGE_PPERCENT=`printf "%0.f" $PERCENT`
+    OUTPUT_PERCENTAGE_PPERCENT=`calc_to_i "$PERCENT"`
     printf " ] %s%%\r" $OUTPUT_PERCENTAGE_PPERCENT >&2
   }
 }  # output_percentage
@@ -452,7 +452,7 @@ get_dists() {
     return $RC
   else
     # Echo all known distributions.
-    for D in Void Ubuntu 'Debian GNU/Linux' Arch 'Garuda Linux'; do echo "$D"; done
+    for D in Void Ubuntu 'Debian GNU/Linux' Arch 'Garuda Linux' Fedora 'Fedora Linux'; do echo "$D"; done
   fi
   return 0
 }  # get_dists
@@ -498,7 +498,7 @@ sudo_install_fedora_packages() {
   dnf -y upgrade || { error "Failed: dnf -y upgrade"; exit 1; }
   # Packages to build python
   info "Install packages to build python and to run Sephrasto ..."
-  #pacman --noconfirm --needed -S base-devel binutils bc tar wget git xz autoconf libtool openssl zlib ncurses readline libyaml libffi libxcb zstd gdbm lzlib tk ipset libnsl libtirpc sqlite zlib  qtcreator qt5-base libxcb xcb-util xcb-util-cursor xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
+  dnf -y install make automake gcc gcc-c++ kernel-devel binutils bc tar wget git xz autoconf libtool openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb libxcb-devel libzstd-devel gdbm-devel liblzf-devel xz-devel tk-devel ipset-devel libnsl2-devel libtirpc-devel sqlite-devel zlib-devel  qt5-qtbase qt5-qtbase-gui qt5-qtbase-static xcb-util xcb-util-cursor xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
 }  # sudo_install_fedora_packages
 #
 do_with_sudo() {
@@ -537,6 +537,7 @@ do_build() {
     Void) do_with_sudo sudo_install_void_packages || exit 1;;
     Ubuntu|'Debian GNU/Linux') do_with_sudo sudo_install_ubuntu_packages || exit 1;;
     Arch|'Garuda Linux') do_with_sudo sudo_install_arch_packages || exit 1;;
+    Fedora|'Fedora Linux') do_with_sudo sudo_install_fedora_packages || exit 1;;
     *)
       error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
       exit 1
@@ -567,7 +568,7 @@ do_build() {
       Void)
         info "Build python: ./configure ..."
         unset OUTPUT_PERCENTAGE_PPERCENT
-        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 747 || { error "Failed: ./configure ..."; exit 1; }
+        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 746 || { error "Failed: ./configure ..."; exit 1; }
         info "Build python: make"
         unset OUTPUT_PERCENTAGE_PPERCENT
         { make 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 753 || { error "Failed: make"; exit 1; }
@@ -596,6 +597,17 @@ do_build() {
         info "Build python: make install"
         unset OUTPUT_PERCENTAGE_PPERCENT
         { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8119 || { error "Failed: make install"; exit 1; }
+        ;;
+      Fedora|'Fedora Linux')
+        info "Build python: ./configure ..."
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 746 || { error "Failed: ./configure ..."; exit 1; }
+        info "Build python: make"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 779 || { error "Failed: make"; exit 1; }
+        info "Build python: make install"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8129 || { error "Failed: make install"; exit 1; }
         ;;
       *)
         error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
@@ -649,10 +661,10 @@ EOF
     cat > Sephrasto.sh <<EOF
 #!/bin/sh
 IS_START_BY_COMMAND=false
-[ "$1" = "run" ] && IS_START_BY_COMMAND=true
+[ "\$1" = "run" ] && IS_START_BY_COMMAND=true
 cd "$LOCAL_SEPHRASTRO_DIR/venv-sephrasto-$PYHTON_VERSION_TO_INSTALL"
 . ./bin/activate
-if [ "$IS_START_BY_COMMAND" = true ]; then
+if [ "\$IS_START_BY_COMMAND" = true ]; then
   ./bin/python3 Sephrasto/src/Sephrasto/Sephrasto.py || cat sephrasto.log >&2
 else
   exec ./bin/python3 Sephrasto/src/Sephrasto/Sephrasto.py
@@ -877,6 +889,7 @@ cat <&6 | while read ARG; do
     sudo_install_void_packages) sudo_install_void_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
     sudo_install_ubuntu_packages) sudo_install_ubuntu_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
     sudo_install_arch_packages) sudo_install_arch_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
+    sudo_install_fedora_packages) sudo_install_fedora_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
     list) do_list_distributions; RC=$?; [ $RC = 0 ] || exit $RC;;
     *) error "Unknown command! CMD='$ARG'"; exit 10;;
   esac
