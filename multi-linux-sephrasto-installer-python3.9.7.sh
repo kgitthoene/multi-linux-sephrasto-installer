@@ -452,7 +452,7 @@ get_dists() {
     return $RC
   else
     # Echo all known distributions.
-    for D in Void Ubuntu 'Debian GNU/Linux' Arch 'Garuda Linux' Fedora 'Fedora Linux'; do echo "$D"; done
+    for D in Void Ubuntu 'Debian GNU/Linux' Arch 'Garuda Linux' 'Manjaro Linux' Fedora 'Fedora Linux'; do echo "$D"; done
   fi
   return 0
 }  # get_dists
@@ -520,7 +520,7 @@ do_with_sudo() {
     }
     if type sudo >/dev/null 2>&1; then
       warn "You don't have super cow powers! Try to start commands with sudo ..."
-      sudo -H "$SHELL" "$ME" - "$CMD"; RC=$?
+      sudo -H "$SHELL" "$ME" - "$CMD" ${SCRIPT_OPT_DIST_NAME:+-D "$SCRIPT_OPT_DIST_NAME"}; RC=$?
       info "|< End of sudo command sequence."
       [ "$RC" = "0" ] || exit $RC
     else
