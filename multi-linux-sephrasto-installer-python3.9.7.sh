@@ -492,6 +492,15 @@ sudo_install_arch_packages() {
   pacman --noconfirm --needed -S base-devel binutils bc tar wget git xz autoconf libtool openssl zlib ncurses readline libyaml libffi libxcb zstd gdbm lzlib tk ipset libnsl libtirpc sqlite zlib  qtcreator qt5-base libxcb xcb-util xcb-util-cursor xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
 }  # sudo_install_arch_packages
 #
+sudo_install_fedora_packages() {
+  # Packages to build python3:
+  info "Update system ... (On a fresh system this may take a long time.)"
+  dnf -y upgrade || { error "Failed: dnf -y upgrade"; exit 1; }
+  # Packages to build python
+  info "Install packages to build python and to run Sephrasto ..."
+  #pacman --noconfirm --needed -S base-devel binutils bc tar wget git xz autoconf libtool openssl zlib ncurses readline libyaml libffi libxcb zstd gdbm lzlib tk ipset libnsl libtirpc sqlite zlib  qtcreator qt5-base libxcb xcb-util xcb-util-cursor xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
+}  # sudo_install_fedora_packages
+#
 do_with_sudo() {
   CMD="$1"
   [ -z "$CMD" ] && {
