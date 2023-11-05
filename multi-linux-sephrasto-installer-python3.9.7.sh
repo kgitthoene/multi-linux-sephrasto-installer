@@ -425,16 +425,19 @@ output_in_case_of_error() {
 #
 get_dists() {
   GET_DISTS_SCRIPT_OPT_CHECK=""
+  GET_DISTS_SCRIPT_OPT_MAP_DIST=""
   while [ "${#}" != "0" ]; do
     SCRIPT_OPTION="true"
     case "${1}" in
       --check) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_CHECK="$1"; else error "Missing argument for option! OPTION='${1}'"; exit 1; fi; shift; continue;;
+      --map) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_MAP_DIST="$1"; else error "Missing argument for option! OPTION='${1}'"; exit 1; fi; shift; continue;;
     esac
     if [ "$SCRIPT_OPTION" = "true" ]; then
       flag="${1#?}"
       while [ -n "${flag}" ]; do
         case "${flag}" in
           c) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_CHECK="$1"; else error "Missing argument for option! OPTION='-${flag}'"; exit 1; fi;;
+          m) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_MAP_DIST="$1"; else error "Missing argument for option! OPTION='-${flag}'"; exit 1; fi;;
           *) error "Invalid option! OPTION='${flag%"${flag#?}"}'"; exit 1;;
         esac
         flag="${flag#?}"
@@ -447,13 +450,20 @@ get_dists() {
     # Check if given distribution is valid.
     get_dists | { VALID_DISTRIBUTION=false; while read DISTRIBUTION; do
         [ "$GET_DISTS_SCRIPT_OPT_CHECK" = "$DISTRIBUTION" ] && { VALID_DISTRIBUTION=true; break; }
-      done; }
+      done; [ "$VALID_DISTRIBUTION" = true ] || exit 1; exit 0; }
     RC=$?
     return $RC
-  else
-    # Echo all known distributions.
-    for D in Void Ubuntu 'Debian GNU/Linux' Arch 'Garuda Linux' 'Manjaro Linux' Fedora 'Fedora Linux'; do echo "$D"; done
   fi
+  if [ -n "$GET_DISTS_SCRIPT_OPT_MAP_DIST" ]; then
+    case "$GET_DISTS_SCRIPT_OPT_MAP_DIST" in
+      Ubuntu|'Debian GNU/Linux') echo -n "Ubuntu-Debian"; return 0;;
+      'Garuda Linux'|'Manjaro Linux') echo -n "Arch"; return 0;;
+      'Fedora Linux') echo -n "Fedora"; return 0;;
+    esac
+    echo -n "$GET_DISTS_SCRIPT_OPT_MAP_DIST"; return 0
+  fi
+  # Echo all known distributions.
+  for D in Void Ubuntu-Debian Ubuntu 'Debian GNU/Linux' Arch 'Garuda Linux' 'Manjaro Linux' Fedora 'Fedora Linux'; do echo "$D"; done
   return 0
 }  # get_dists
 #
@@ -514,7 +524,8 @@ do_with_sudo() {
     }
     if type sudo >/dev/null 2>&1; then
       warn "You don't have super cow powers! Try to start commands with sudo ..."
-      sudo -H "$SHELL" "$ME" - "$CMD" ${SCRIPT_OPT_DIST_NAME:+-D "$SCRIPT_OPT_DIST_NAME"}; RC=$?
+      unset DEBUG_OPT; [ "$SCRIPT_OPT_DEBUG" = true ] && DEBUG_OPT="-d"
+      sudo -H "$SHELL" "$ME" - "$CMD" ${SCRIPT_OPT_DIST_NAME:+-D "$SCRIPT_OPT_DIST_NAME"} $DEBUG_OPT; RC=$?
       info "|< End of sudo command sequence."
       [ "$RC" = "0" ] || exit $RC
     else
@@ -529,9 +540,9 @@ do_build() {
   DISTRIBUTION="$1"; shift
   case "$DISTRIBUTION" in
     Void) do_with_sudo sudo_install_void_packages || exit 1;;
-    Ubuntu|'Debian GNU/Linux') do_with_sudo sudo_install_ubuntu_packages || exit 1;;
-    Arch|'Garuda Linux'|'Manjaro Linux') do_with_sudo sudo_install_arch_packages || exit 1;;
-    Fedora|'Fedora Linux') do_with_sudo sudo_install_fedora_packages || exit 1;;
+    Ubuntu-Debian) do_with_sudo sudo_install_ubuntu_packages || exit 1;;
+    Arch) do_with_sudo sudo_install_arch_packages || exit 1;;
+    Fedora) do_with_sudo sudo_install_fedora_packages || exit 1;;
     *)
       error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
       exit 1
@@ -558,61 +569,18 @@ do_build() {
     info "Build python version=$PYHTON_VERSION_TO_INSTALL"
     cd "Python-$PYHTON_VERSION_TO_INSTALL" ||  { error "Cannot change to directory! DIR='$LOCAL_PYTHON_BUILD_DIR/Python-$PYHTON_VERSION_TO_INSTALL'"; exit 1; }
     #
-    case "$DISTRIBUTION" in
-      Void)
-        info "Build python: ./configure ..."
-        unset OUTPUT_PERCENTAGE_PPERCENT
-        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 746 || { error "Failed: ./configure ..."; exit 1; }
-        info "Build python: make"
-        unset OUTPUT_PERCENTAGE_PPERCENT
-        { make 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 753 || { error "Failed: make"; exit 1; }
-        info "Build python: make install"
-        unset OUTPUT_PERCENTAGE_PPERCENT
-        { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8096 || { error "Failed: make install"; exit 1; }
-        ;;
-      Ubuntu|'Debian GNU/Linux')
-        info "Build python: ./configure ..."
-        unset OUTPUT_PERCENTAGE_PPERCENT
-        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 747 || { error "Failed: ./configure ..."; exit 1; }
-        info "Build python: make"
-        unset OUTPUT_PERCENTAGE_PPERCENT
-        { make 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 733 || { error "Failed: make"; exit 1; }
-        info "Build python: make install"
-        unset OUTPUT_PERCENTAGE_PPERCENT
-        { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8125 || { error "Failed: make install"; exit 1; }
-        ;;
-      Arch|'Garuda Linux'|'Manjaro Linux')
-        info "Build python: ./configure ..."
-        unset OUTPUT_PERCENTAGE_PPERCENT
-        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 746 || { error "Failed: ./configure ..."; exit 1; }
-        info "Build python: make"
-        unset OUTPUT_PERCENTAGE_PPERCENT
-        { make 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 776 || { error "Failed: make"; exit 1; }
-        info "Build python: make install"
-        unset OUTPUT_PERCENTAGE_PPERCENT
-        { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8119 || { error "Failed: make install"; exit 1; }
-        ;;
-      Fedora|'Fedora Linux')
-        info "Build python: ./configure ..."
-        unset OUTPUT_PERCENTAGE_PPERCENT
-        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 746 || { error "Failed: ./configure ..."; exit 1; }
-        info "Build python: make"
-        unset OUTPUT_PERCENTAGE_PPERCENT
-        { make 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 779 || { error "Failed: make"; exit 1; }
-        info "Build python: make install"
-        unset OUTPUT_PERCENTAGE_PPERCENT
-        { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8129 || { error "Failed: make install"; exit 1; }
-        ;;
-      *)
-        error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
-        exit 1
-        ;;
-    esac
+    info "Build python: ./configure ..."
+    unset OUTPUT_PERCENTAGE_PPERCENT
+    { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 746 || { error "Failed: ./configure ..."; exit 1; }
+    info "Build python: make"
+    unset OUTPUT_PERCENTAGE_PPERCENT
+    { make 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 779 || { error "Failed: make"; exit 1; }
+    info "Build python: make install"
+    unset OUTPUT_PERCENTAGE_PPERCENT
+    { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8129 || { error "Failed: make install"; exit 1; }
     exit 0
   )
-  RC=$?
-  [ -f "$TMPFILE" ] && rm -f "$TMPFILE"
-  [ $RC = 0 ] || exit 1
+  RC=$?; [ -f "$TMPFILE" ] && rm -f "$TMPFILE"; [ $RC = 0 ] || exit 1
   (
     info "Create Sephrasto python environment ..."
     (
@@ -859,6 +827,7 @@ OS_DIST_NAME="$DIST_NAME"
   DIST_NAME="$SCRIPT_OPT_DIST_NAME"
   DIST_VERSION=""
 }
+DIST_NAME=`get_dists --map "$DIST_NAME"`
 debug "DIST_NAME='$DIST_NAME' DIST_VERSION='$DIST_VERSION'"
 # Check distribution.
 get_dists --check "$DIST_NAME" || {
@@ -866,6 +835,9 @@ get_dists --check "$DIST_NAME" || {
   error "List all valid distributions with command \`list\`."
   exit 1
 }
+#
+#----------
+#
 is_glibc || {
   error "Sorry, you should have glibc (https://www.gnu.org/software/libc/) to run Sephrasto!"
   exit 1
