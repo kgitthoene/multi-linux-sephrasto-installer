@@ -463,11 +463,8 @@ sudo_install_void_packages() {
   { xbps-install -y -Su 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { xbps-install -y -u xbps >/dev/null 2>&1; } || { error "Failed: xbps-install -y -u xbps"; exit 1; }
   { xbps-install -y -Su 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed: xbps-install -y -Su"; exit 1; }
   # Packages to build python
-  info "Install packages to build python ..."
-  { xbps-install -y base-devel binutils tar bc wget git xz openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb-devel libzstd-devel gdbm-devel liblzma-devel tk-devel libipset-devel libnsl-devel libtirpc-devel; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error || { error "Failed to install packages to build python!"; exit 1; }
-  # Packages to run Sephrasto
-  info "Install packages to run Sephrasto ..."
-  { xbps-install -y qt5 libxcb libxcb-devel xcb-util-cursor xcb-imdkit xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error || { error "Failed to install packages to run Sephrasto!"; exit 1; }
+  info "Install packages to build python and to run Sephrasto ..."
+  { xbps-install -y base-devel binutils tar bc wget git xz openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb-devel libzstd-devel gdbm-devel liblzma-devel tk-devel libipset-devel libnsl-devel libtirpc-devel  qt5 libxcb libxcb-devel xcb-util-cursor xcb-imdkit xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm pdftk; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
 }  # sudo_install_void_packages
 #
 sudo_install_ubuntu_packages() {
@@ -477,10 +474,7 @@ sudo_install_ubuntu_packages() {
   { apt -y upgrade 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed: apt -y upgrade"; exit 1; }
   # Packages to build python
   info "Install packages to build python ..."
-  { apt -y install build-essential binutils bc tar wget git xz-utils autoconf libtool libssl-dev libzip-dev libncurses-dev libreadline-dev libyaml-dev libffi-dev libx11-xcb-dev libzstd-dev libgdbm-dev liblzma-dev tk-dev libipset-dev libnsl-dev libtirpc-dev libncursesw5-dev libc6-dev libsqlite3-dev libbz2-dev libsqlite3-dev zlib1g zlib1g-dev 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed to install packages to build python!"; exit 1; }
-  # Packages to run Sephrasto
-  info "Install packages to run Sephrasto ..."
-  { apt -y install qtcreator qtbase5-dev qt5-qmake libxcb-composite0 libxcb-cursor0 libxcb-damage0 libxcb-doc libxcb-dpms0 libxcb-dri2-0 libxcb-dri3-0 libxcb-ewmh2 libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-imdkit1 libxcb-keysyms1 libxcb-present0 libxcb-randr0 libxcb-record0 libxcb-render-util0 libxcb-render0 libxcb-res0 libxcb-screensaver0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xf86dri0 libxcb-xfixes0 libxcb-xinerama0 libxcb-xinput0 libxcb-xkb1 libxcb-xrm0 libxcb-xtest0 libxcb-xv0 libxcb-xvmc0 libxcb1 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed to install packages to run Sephrasto!"; exit 1; }
+  { apt -y install build-essential binutils bc tar wget git xz-utils autoconf libtool libssl-dev libzip-dev libncurses-dev libreadline-dev libyaml-dev libffi-dev libx11-xcb-dev libzstd-dev libgdbm-dev liblzma-dev tk-dev libipset-dev libnsl-dev libtirpc-dev libncursesw5-dev libc6-dev libsqlite3-dev libbz2-dev libsqlite3-dev zlib1g zlib1g-dev  qtcreator qtbase5-dev qt5-qmake libxcb-composite0 libxcb-cursor0 libxcb-damage0 libxcb-doc libxcb-dpms0 libxcb-dri2-0 libxcb-dri3-0 libxcb-ewmh2 libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-imdkit1 libxcb-keysyms1 libxcb-present0 libxcb-randr0 libxcb-record0 libxcb-render-util0 libxcb-render0 libxcb-res0 libxcb-screensaver0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xf86dri0 libxcb-xfixes0 libxcb-xinerama0 libxcb-xinput0 libxcb-xkb1 libxcb-xrm0 libxcb-xtest0 libxcb-xv0 libxcb-xvmc0 libxcb1 pdftk 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
 }  # sudo_install_ubuntu_packages
 #
 sudo_install_arch_packages() {
@@ -489,7 +483,7 @@ sudo_install_arch_packages() {
   pacman --noconfirm -Syu || { error "Failed: pacman -Syu"; exit 1; }
   # Packages to build python
   info "Install packages to build python and to run Sephrasto ..."
-  pacman --noconfirm --needed -S base-devel binutils bc tar wget git xz autoconf libtool openssl zlib ncurses readline libyaml libffi libxcb zstd gdbm lzlib tk ipset libnsl libtirpc sqlite zlib  qtcreator qt5-base libxcb xcb-util xcb-util-cursor xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
+  pacman --noconfirm --needed -S base-devel binutils bc tar wget git xz autoconf libtool openssl zlib ncurses readline libyaml libffi libxcb zstd gdbm lzlib tk ipset libnsl libtirpc sqlite zlib  qtcreator qt5-base libxcb xcb-util xcb-util-cursor xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm pdftk || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
 }  # sudo_install_arch_packages
 #
 sudo_install_fedora_packages() {
@@ -498,7 +492,7 @@ sudo_install_fedora_packages() {
   dnf -y upgrade || { error "Failed: dnf -y upgrade"; exit 1; }
   # Packages to build python
   info "Install packages to build python and to run Sephrasto ..."
-  dnf -y install make automake gcc gcc-c++ kernel-devel binutils bc tar wget git xz autoconf libtool openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb libxcb-devel libzstd-devel gdbm-devel liblzf-devel xz-devel tk-devel ipset-devel libnsl2-devel libtirpc-devel sqlite-devel zlib-devel  qt5-qtbase qt5-qtbase-gui qt5-qtbase-static xcb-util xcb-util-cursor xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
+  dnf -y install make automake gcc gcc-c++ kernel-devel binutils bc tar wget git xz autoconf libtool openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb libxcb-devel libzstd-devel gdbm-devel liblzf-devel xz-devel tk-devel ipset-devel libnsl2-devel libtirpc-devel sqlite-devel zlib-devel  qt5-qtbase qt5-qtbase-gui qt5-qtbase-static xcb-util xcb-util-cursor xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm pdftk || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
 }  # sudo_install_fedora_packages
 #
 do_with_sudo() {
