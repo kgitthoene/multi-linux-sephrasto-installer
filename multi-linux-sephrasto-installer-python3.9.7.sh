@@ -471,20 +471,20 @@ sudo_install_void_packages() {
   # Packages to build python3:
   info "Update system ... (On a fresh system this may take a long time.)"
   { xbps-install -y -Su 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { xbps-install -y -u xbps >/dev/null 2>&1; } || { error "Failed: xbps-install -y -u xbps"; exit 1; }
-  { xbps-install -y -Su 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed: xbps-install -y -Su"; exit 1; }
+  xbps-install -y -Su 2>&1 || { error "Failed: xbps-install -y -Su"; exit 1; }
   # Packages to build python
   info "Install packages to build python and to run Sephrasto ..."
-  { xbps-install -y base-devel binutils tar bc wget git xz openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb-devel libzstd-devel gdbm-devel liblzma-devel tk-devel libipset-devel libnsl-devel libtirpc-devel  qt5 libxcb libxcb-devel xcb-util-cursor xcb-imdkit xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm pdftk; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
+  xbps-install -y base-devel binutils tar bc wget git xz openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb-devel libzstd-devel gdbm-devel liblzma-devel tk-devel libipset-devel libnsl-devel libtirpc-devel  qt5 libxcb libxcb-devel xcb-util-cursor xcb-imdkit xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm pdftk || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
 }  # sudo_install_void_packages
 #
 sudo_install_ubuntu_packages() {
   # Packages to build python3:
   info "Update system ... (On a fresh system this may take a long time.)"
-  { apt -y update 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed: apt -y update"; exit 1; }
-  { apt -y upgrade 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed: apt -y upgrade"; exit 1; }
+  apt -y update || { error "Failed: apt -y update"; exit 1; }
+  apt -y upgrade || { error "Failed: apt -y upgrade"; exit 1; }
   # Packages to build python
-  info "Install packages to build python ..."
-  { apt -y install build-essential binutils bc tar wget git xz-utils autoconf libtool libssl-dev libzip-dev libncurses-dev libreadline-dev libyaml-dev libffi-dev libx11-xcb-dev libzstd-dev libgdbm-dev liblzma-dev tk-dev libipset-dev libnsl-dev libtirpc-dev libncursesw5-dev libc6-dev libsqlite3-dev libbz2-dev libsqlite3-dev zlib1g zlib1g-dev  qtcreator qtbase5-dev qt5-qmake libxcb-composite0 libxcb-cursor0 libxcb-damage0 libxcb-doc libxcb-dpms0 libxcb-dri2-0 libxcb-dri3-0 libxcb-ewmh2 libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-imdkit1 libxcb-keysyms1 libxcb-present0 libxcb-randr0 libxcb-record0 libxcb-render-util0 libxcb-render0 libxcb-res0 libxcb-screensaver0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xf86dri0 libxcb-xfixes0 libxcb-xinerama0 libxcb-xinput0 libxcb-xkb1 libxcb-xrm0 libxcb-xtest0 libxcb-xv0 libxcb-xvmc0 libxcb1 pdftk 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
+  info "Install packages to build python and to run Sephrasto ..."
+  apt -y install build-essential binutils bc tar wget git xz-utils autoconf libtool libssl-dev libzip-dev libncurses-dev libreadline-dev libyaml-dev libffi-dev libx11-xcb-dev libzstd-dev libgdbm-dev liblzma-dev tk-dev libipset-dev libnsl-dev libtirpc-dev libncursesw5-dev libc6-dev libsqlite3-dev libbz2-dev libsqlite3-dev zlib1g zlib1g-dev  qtcreator qtbase5-dev qt5-qmake libxcb-composite0 libxcb-cursor0 libxcb-damage0 libxcb-doc libxcb-dpms0 libxcb-dri2-0 libxcb-dri3-0 libxcb-ewmh2 libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-imdkit1 libxcb-keysyms1 libxcb-present0 libxcb-randr0 libxcb-record0 libxcb-render-util0 libxcb-render0 libxcb-res0 libxcb-screensaver0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xf86dri0 libxcb-xfixes0 libxcb-xinerama0 libxcb-xinput0 libxcb-xkb1 libxcb-xrm0 libxcb-xtest0 libxcb-xv0 libxcb-xvmc0 libxcb1 pdftk || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
 }  # sudo_install_ubuntu_packages
 #
 sudo_install_arch_packages() {
