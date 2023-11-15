@@ -28,6 +28,7 @@ The tests were carried out on fresh installations.
 | Linux Distribution                        | Version                              | Type        | Test Result |
 | ----------                                | ----------                           | ----------  | ----------  |
 | [Void Linux](https://voidlinux.org/)      | `x86_64-20230628-xfce glibc`         | Void        | WORKING     |
+| [Debian](https://www.debian.org/)         | `12.2.0-amd64-xfce`                  | Debian      | WORKING     |
 | [Xubuntu](https://xubuntu.org/)           | `22.04.3-desktop-amd64 LTS`          | Ubuntu      | WORKING     |
 | [Xubuntu](https://xubuntu.org/)           | `23.10-desktop-amd64`                | Ubuntu      | WORKING     |
 | [MX Linux](https://mxlinux.org/)          | `23.1_x64`                           | Debian      | WORKING     |
