@@ -64,7 +64,7 @@ The `build` command updates your Linux, installs all needed packages, builds [Py
 
 The Python build is placed in `~/.localpython/python3.9.7`.
 
-The Sephrato [venv](https://docs.python.org/3/library/venv.html) is placed in `~/.localpython/bin/venv-sephrasto-3.9.7`.
+The Sephrasto [venv](https://docs.python.org/3/library/venv.html) is placed in `~/.localpython/bin/venv-sephrasto-3.9.7`.
 
 The script `Sephrasto.sh` to run Sephrasto is placed in `~/.localpython/bin`.
 
