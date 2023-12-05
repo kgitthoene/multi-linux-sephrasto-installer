@@ -59,7 +59,7 @@ Options:
   -h, --help      -- Print this text.
 ```
 
-#### buildXXX
+#### build
 
 The `build` command updates your Linux, installs all needed packages, builds [Python](https://www.python.org/) 3.9.7 in a separate directory and creates a virtual Python environment to run Sephrasto.
 
