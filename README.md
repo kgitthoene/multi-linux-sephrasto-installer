@@ -63,7 +63,7 @@ Options:
 
 The `build` command updates your Linux, installs all needed packages, builds [Python](https://www.python.org/) 3.9.7 in a separate directory and creates a virtual Python environment to run Sephrasto.
 
-The Python build is placed in `~/.localpython/python3.9.7`.
+The Python build is placed in `~/.localpython/python-3.9.7`.
 
 The Sephrasto [venv](https://docs.python.org/3/library/venv.html) is placed in `~/.localpython/bin/venv-sephrasto-3.9.7`.
 
