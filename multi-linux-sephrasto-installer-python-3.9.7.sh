@@ -425,19 +425,16 @@ output_in_case_of_error() {
 #
 get_dists() {
   GET_DISTS_SCRIPT_OPT_CHECK=""
-  GET_DISTS_SCRIPT_OPT_MAP_DIST=""
   while [ "${#}" != "0" ]; do
     SCRIPT_OPTION="true"
     case "${1}" in
       --check) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_CHECK="$1"; else error "Missing argument for option! OPTION='${1}'"; exit 1; fi; shift; continue;;
-      --map) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_MAP_DIST="$1"; else error "Missing argument for option! OPTION='${1}'"; exit 1; fi; shift; continue;;
     esac
     if [ "$SCRIPT_OPTION" = "true" ]; then
       flag="${1#?}"
       while [ -n "${flag}" ]; do
         case "${flag}" in
           c) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_CHECK="$1"; else error "Missing argument for option! OPTION='-${flag}'"; exit 1; fi;;
-          m) if [ -n "$2" ]; then shift; GET_DISTS_SCRIPT_OPT_MAP_DIST="$1"; else error "Missing argument for option! OPTION='-${flag}'"; exit 1; fi;;
           *) error "Invalid option! OPTION='${flag%"${flag#?}"}'"; exit 1;;
         esac
         flag="${flag#?}"
@@ -450,20 +447,13 @@ get_dists() {
     # Check if given distribution is valid.
     get_dists | { VALID_DISTRIBUTION=false; while read DISTRIBUTION; do
         [ "$GET_DISTS_SCRIPT_OPT_CHECK" = "$DISTRIBUTION" ] && { VALID_DISTRIBUTION=true; break; }
-      done; [ "$VALID_DISTRIBUTION" = true ] || exit 1; exit 0; }
+      done; }
     RC=$?
     return $RC
+  else
+    # Echo all known distributions.
+    for D in Void Ubuntu 'Debian GNU/Linux' Arch 'Garuda Linux' Fedora 'Fedora Linux'; do echo "$D"; done
   fi
-  if [ -n "$GET_DISTS_SCRIPT_OPT_MAP_DIST" ]; then
-    case "$GET_DISTS_SCRIPT_OPT_MAP_DIST" in
-      Ubuntu|'Debian GNU/Linux') echo -n "Ubuntu-Debian"; return 0;;
-      'Garuda Linux'|'Manjaro Linux') echo -n "Arch"; return 0;;
-      'Fedora Linux') echo -n "Fedora"; return 0;;
-    esac
-    echo -n "$GET_DISTS_SCRIPT_OPT_MAP_DIST"; return 0
-  fi
-  # Echo all known distributions.
-  for D in Void Ubuntu-Debian Ubuntu 'Debian GNU/Linux' Arch 'Garuda Linux' 'Manjaro Linux' Fedora 'Fedora Linux'; do echo "$D"; done
   return 0
 }  # get_dists
 #
@@ -471,20 +461,26 @@ sudo_install_void_packages() {
   # Packages to build python3:
   info "Update system ... (On a fresh system this may take a long time.)"
   { xbps-install -y -Su 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { xbps-install -y -u xbps >/dev/null 2>&1; } || { error "Failed: xbps-install -y -u xbps"; exit 1; }
-  xbps-install -y -Su 2>&1 || { error "Failed: xbps-install -y -Su"; exit 1; }
+  { xbps-install -y -Su 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed: xbps-install -y -Su"; exit 1; }
   # Packages to build python
-  info "Install packages to build python and to run Sephrasto ..."
-  xbps-install -y base-devel binutils tar bc wget git xz openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb-devel libzstd-devel gdbm-devel liblzma-devel tk-devel libipset-devel libnsl-devel libtirpc-devel  qt5 libxcb libxcb-devel xcb-util-cursor xcb-imdkit xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm pdftk || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
+  info "Install packages to build python ..."
+  { xbps-install -y base-devel binutils tar bc wget git xz openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb-devel libzstd-devel gdbm-devel liblzma-devel tk-devel libipset-devel libnsl-devel libtirpc-devel; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error || { error "Failed to install packages to build python!"; exit 1; }
+  # Packages to run Sephrasto
+  info "Install packages to run Sephrasto ..."
+  { xbps-install -y qt5 libxcb libxcb-devel xcb-util-cursor xcb-imdkit xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm; echo PIPESTATE0=$?; } 2>&1 | output_in_case_of_error || { error "Failed to install packages to run Sephrasto!"; exit 1; }
 }  # sudo_install_void_packages
 #
 sudo_install_ubuntu_packages() {
   # Packages to build python3:
   info "Update system ... (On a fresh system this may take a long time.)"
-  apt -y update || { error "Failed: apt -y update"; exit 1; }
-  apt -y upgrade || { error "Failed: apt -y upgrade"; exit 1; }
+  { apt -y update 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed: apt -y update"; exit 1; }
+  { apt -y upgrade 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed: apt -y upgrade"; exit 1; }
   # Packages to build python
-  info "Install packages to build python and to run Sephrasto ..."
-  apt -y install build-essential binutils bc tar wget git xz-utils autoconf libtool libssl-dev libzip-dev libncurses-dev libreadline-dev libyaml-dev libffi-dev libx11-xcb-dev libzstd-dev libgdbm-dev liblzma-dev tk-dev libipset-dev libnsl-dev libtirpc-dev libncursesw5-dev libc6-dev libsqlite3-dev libbz2-dev libsqlite3-dev zlib1g zlib1g-dev  qtcreator qtbase5-dev qt5-qmake libxcb-composite0 libxcb-cursor0 libxcb-damage0 libxcb-doc libxcb-dpms0 libxcb-dri2-0 libxcb-dri3-0 libxcb-ewmh2 libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-imdkit1 libxcb-keysyms1 libxcb-present0 libxcb-randr0 libxcb-record0 libxcb-render-util0 libxcb-render0 libxcb-res0 libxcb-screensaver0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xf86dri0 libxcb-xfixes0 libxcb-xinerama0 libxcb-xinput0 libxcb-xkb1 libxcb-xrm0 libxcb-xtest0 libxcb-xv0 libxcb-xvmc0 libxcb1 pdftk || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
+  info "Install packages to build python ..."
+  { apt -y install build-essential binutils bc tar wget git xz-utils autoconf libtool libssl-dev libzip-dev libncurses-dev libreadline-dev libyaml-dev libffi-dev libx11-xcb-dev libzstd-dev libgdbm-dev liblzma-dev tk-dev libipset-dev libnsl-dev libtirpc-dev libncursesw5-dev libc6-dev libsqlite3-dev libbz2-dev libsqlite3-dev zlib1g zlib1g-dev 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed to install packages to build python!"; exit 1; }
+  # Packages to run Sephrasto
+  info "Install packages to run Sephrasto ..."
+  { apt -y install qtcreator qtbase5-dev qt5-qmake libxcb-composite0 libxcb-cursor0 libxcb-damage0 libxcb-doc libxcb-dpms0 libxcb-dri2-0 libxcb-dri3-0 libxcb-ewmh2 libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-imdkit1 libxcb-keysyms1 libxcb-present0 libxcb-randr0 libxcb-record0 libxcb-render-util0 libxcb-render0 libxcb-res0 libxcb-screensaver0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xf86dri0 libxcb-xfixes0 libxcb-xinerama0 libxcb-xinput0 libxcb-xkb1 libxcb-xrm0 libxcb-xtest0 libxcb-xv0 libxcb-xvmc0 libxcb1 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed to install packages to run Sephrasto!"; exit 1; }
 }  # sudo_install_ubuntu_packages
 #
 sudo_install_arch_packages() {
@@ -493,7 +489,7 @@ sudo_install_arch_packages() {
   pacman --noconfirm -Syu || { error "Failed: pacman -Syu"; exit 1; }
   # Packages to build python
   info "Install packages to build python and to run Sephrasto ..."
-  pacman --noconfirm --needed -S base-devel binutils bc tar wget git xz autoconf libtool openssl zlib ncurses readline libyaml libffi libxcb zstd gdbm lzlib tk ipset libnsl libtirpc sqlite zlib  qtcreator qt5-base libxcb xcb-util xcb-util-cursor xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm pdftk || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
+  pacman --noconfirm --needed -S base-devel binutils bc tar wget git xz autoconf libtool openssl zlib ncurses readline libyaml libffi libxcb zstd gdbm lzlib tk ipset libnsl libtirpc sqlite zlib  qtcreator qt5-base libxcb xcb-util xcb-util-cursor xcb-util-errors xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
 }  # sudo_install_arch_packages
 #
 sudo_install_fedora_packages() {
@@ -502,7 +498,7 @@ sudo_install_fedora_packages() {
   dnf -y upgrade || { error "Failed: dnf -y upgrade"; exit 1; }
   # Packages to build python
   info "Install packages to build python and to run Sephrasto ..."
-  dnf -y install make automake gcc gcc-c++ kernel-devel binutils bc tar wget git xz autoconf libtool openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb libxcb-devel libzstd-devel gdbm-devel liblzf-devel xz-devel tk-devel ipset-devel libnsl2-devel libtirpc-devel sqlite-devel zlib-devel  qt5-qtbase qt5-qtbase-gui qt5-qtbase-static xcb-util xcb-util-cursor xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm pdftk || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
+  dnf -y install make automake gcc gcc-c++ kernel-devel binutils bc tar wget git xz autoconf libtool openssl-devel zlib-devel ncurses-devel readline-devel libyaml-devel libffi-devel libxcb libxcb-devel libzstd-devel gdbm-devel liblzf-devel xz-devel tk-devel ipset-devel libnsl2-devel libtirpc-devel sqlite-devel zlib-devel  qt5-qtbase qt5-qtbase-gui qt5-qtbase-static xcb-util xcb-util-cursor xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xcb-util-xrm || { error "Failed to install packages to build python and to run Sephrasto!"; exit 1; }
 }  # sudo_install_fedora_packages
 #
 do_with_sudo() {
@@ -524,8 +520,7 @@ do_with_sudo() {
     }
     if type sudo >/dev/null 2>&1; then
       warn "You don't have super cow powers! Try to start commands with sudo ..."
-      unset DEBUG_OPT; [ "$SCRIPT_OPT_DEBUG" = true ] && DEBUG_OPT="-d"
-      sudo -H "$SHELL" "$ME" - "$CMD" ${SCRIPT_OPT_DIST_NAME:+-D "$SCRIPT_OPT_DIST_NAME"} $DEBUG_OPT; RC=$?
+      sudo -H "$SHELL" "$ME" - "$CMD"; RC=$?
       info "|< End of sudo command sequence."
       [ "$RC" = "0" ] || exit $RC
     else
@@ -536,75 +531,30 @@ do_with_sudo() {
   unset MEUID CMD
 }  # do_with_sudo
 #
-do_build() {
-  DISTRIBUTION="$1"; shift
-  case "$DISTRIBUTION" in
-    Void) do_with_sudo sudo_install_void_packages || exit 1;;
-    Ubuntu-Debian) do_with_sudo sudo_install_ubuntu_packages || exit 1;;
-    Arch) do_with_sudo sudo_install_arch_packages || exit 1;;
-    Fedora) do_with_sudo sudo_install_fedora_packages || exit 1;;
-    *)
-      error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
-      exit 1
-      ;;
-  esac
-  #
-  info "Create build directories ..."
-  LOCAL_PYTHON_BUILD_DIR="$HOME/.localpython/build"
-  [ -d "$LOCAL_PYTHON_BUILD_DIR" ] || mkdir -p "$LOCAL_PYTHON_BUILD_DIR" || { error "Cannot create directory! DIR='$LOCAL_PYTHON_BUILD_DIR'"; exit 1; }
+do_update_sephrasto() {
   LOCAL_SEPHRASTRO_DIR="$HOME/.localpython/bin"
-  [ -d "$LOCAL_SEPHRASTRO_DIR" ] || mkdir -p "$LOCAL_SEPHRASTRO_DIR" || { error "Cannot create directory! DIR='$LOCAL_SEPHRASTRO_DIR'"; exit 1; }
-  LOCAL_PYTHON_INSTALLATION_DIR="$HOME/.localpython/python$PYHTON_VERSION_TO_INSTALL"
-  [ -d "$LOCAL_PYTHON_INSTALLATION_DIR" ] || mkdir -p "$LOCAL_PYTHON_INSTALLATION_DIR" || { error "Cannot create directory! DIR='$LOCAL_PYTHON_INSTALLATION_DIR'"; exit 1; }
-  #
-  # Download python.
-  info "Download python source tarball ..."
-  TMPFILE=`mktemp -p "$LOCAL_PYTHON_BUILD_DIR" "$MYNAME-python-src-XXXXXXX"`
-  trap at_exit EXIT HUP INT QUIT TERM
-  wget -q "https://www.python.org/ftp/python/$PYHTON_VERSION_TO_INSTALL/Python-$PYHTON_VERSION_TO_INSTALL.tar.xz" -O - > "$TMPFILE" || exit 1
-  (
-    cd "$LOCAL_PYTHON_BUILD_DIR" || exit 1
-    tar xf "$TMPFILE" || exit 1
-    rm -f "$TMPFILE"
-    info "Build python version=$PYHTON_VERSION_TO_INSTALL"
-    cd "Python-$PYHTON_VERSION_TO_INSTALL" ||  { error "Cannot change to directory! DIR='$LOCAL_PYTHON_BUILD_DIR/Python-$PYHTON_VERSION_TO_INSTALL'"; exit 1; }
-    #
-    info "Build python: ./configure ..."
-    unset OUTPUT_PERCENTAGE_PPERCENT
-    { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 746 || { error "Failed: ./configure ..."; exit 1; }
-    info "Build python: make"
-    unset OUTPUT_PERCENTAGE_PPERCENT
-    { make 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 779 || { error "Failed: make"; exit 1; }
-    info "Build python: make install"
-    unset OUTPUT_PERCENTAGE_PPERCENT
-    { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8129 || { error "Failed: make install"; exit 1; }
-    exit 0
-  )
-  RC=$?; [ -f "$TMPFILE" ] && rm -f "$TMPFILE"; [ $RC = 0 ] || exit 1
-  (
-    info "Create Sephrasto python environment ..."
-    (
-      cd "$LOCAL_PYTHON_INSTALLATION_DIR"
-      ./bin/python3 -m pip install --upgrade pip
-      ./bin/python3 -m pip install virtualenv
-      exit 0
-    )
-    RC=$?; [ $RC = 0 ] || exit 1
-    cd "$LOCAL_SEPHRASTRO_DIR"
-    "$LOCAL_PYTHON_INSTALLATION_DIR/bin/python3" -m venv "venv-sephrasto-$PYHTON_VERSION_TO_INSTALL"
-    (
-      cd "venv-sephrasto-$PYHTON_VERSION_TO_INSTALL"
-      . ./bin/activate
-      ./bin/python3 -m pip install --upgrade pip
-      info "Download Sephrasto ..."
-      [ -d Sephrasto ] || git clone https://github.com/Aeolitus/Sephrasto.git || { error "Cannot download Sephrasto! GIT CLONE"; exit 1; }
-      info "Install Sephrasto requirements ..."
-      ./bin/pip install -r Sephrasto/requirements.txt || { error "Cannot install Sephrasto requierements! PIP INSTALL"; exit 1; }
-      exit 0
-    )
-    RC=$?; [ $RC = 0 ] || exit 1
-    info "Create Sephrasto .desktop file ..."
-    cat > Sephrasto.desktop <<EOF
+  [ -d "$LOCAL_SEPHRASTRO_DIR/venv-sephrasto-$PYHTON_VERSION_TO_INSTALL" ] || {
+    error "Missing directory! Execute command 'build' first! DIR='$LOCAL_SEPHRASTRO_DIR/venv-sephrasto-$PYHTON_VERSION_TO_INSTALL'"
+    return 1
+  }
+  [ -f "$LOCAL_SEPHRASTRO_DIR/venv-sephrasto-$PYHTON_VERSION_TO_INSTALL/bin/activate" ] || {
+    error "Missing 'activate' script in virtual environment! Execute command 'build' first!"
+    return 1
+  }
+  cd "$LOCAL_SEPHRASTRO_DIR/venv-sephrasto-$PYHTON_VERSION_TO_INSTALL"
+  . ./bin/activate
+  ./bin/python3 -m pip install --upgrade pip
+  [ -d "Sephrasto" ] && {
+    # Remove old version of Sephrasto.
+    rm -rf "Sephrasto"
+  }
+  info "Download Sephrasto ..."
+  [ -d Sephrasto ] || git clone https://github.com/Aeolitus/Sephrasto.git || { error "Cannot download Sephrasto! GIT CLONE"; exit 1; }
+  info "Install Sephrasto requirements ..."
+  ./bin/pip install -r Sephrasto/requirements.txt || { error "Cannot install Sephrasto requierements! PIP INSTALL"; exit 1; }
+  RC=$?; [ $RC = 0 ] || return 1
+  info "Create Sephrasto .desktop file ..."
+  cat > "$LOCAL_SEPHRASTRO_DIR/Sephrasto.desktop" <<EOF
 [Desktop Entry]
 Encoding=UTF-8
 Version=1.0
@@ -619,8 +569,8 @@ StartupNotify=true
 Categories=Game;
 Name[de_DE]=Sephrasto
 EOF
-    info "Create Sephrasto startup script ..."
-    cat > Sephrasto.sh <<EOF
+  info "Create Sephrasto startup script ..."
+  cat > "$LOCAL_SEPHRASTRO_DIR/Sephrasto.sh" <<EOF
 #!/bin/sh
 IS_START_BY_COMMAND=false
 [ "\$1" = "run" ] && IS_START_BY_COMMAND=true
@@ -632,8 +582,113 @@ else
   exec ./bin/python3 Sephrasto/src/Sephrasto/Sephrasto.py
 fi
 EOF
-    info "Install Sephrasto with \`$MYNAME install\`"
-    info "Start Sephrasto with \`$MYNAME run\`"
+  info "Install Sephrasto with \`$MYNAME install\`"
+  info "Start Sephrasto with \`$MYNAME run\`"
+  return 0
+}  # do_update_sephrasto
+#
+do_build() {
+  DISTRIBUTION="$1"; shift
+  case "$DISTRIBUTION" in
+    Void) do_with_sudo sudo_install_void_packages || exit 1;;
+    Ubuntu|'Debian GNU/Linux') do_with_sudo sudo_install_ubuntu_packages || exit 1;;
+    Arch|'Garuda Linux') do_with_sudo sudo_install_arch_packages || exit 1;;
+    Fedora|'Fedora Linux') do_with_sudo sudo_install_fedora_packages || exit 1;;
+    *)
+      error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
+      exit 1
+      ;;
+  esac
+  #
+  info "Create build directories ..."
+  LOCAL_PYTHON_BUILD_DIR="$HOME/.localpython/build"
+  [ -d "$LOCAL_PYTHON_BUILD_DIR" ] || mkdir -p "$LOCAL_PYTHON_BUILD_DIR" || { error "Cannot create directory! DIR='$LOCAL_PYTHON_BUILD_DIR'"; exit 1; }
+  LOCAL_SEPHRASTRO_DIR="$HOME/.localpython/bin"
+  [ -d "$LOCAL_SEPHRASTRO_DIR" ] || mkdir -p "$LOCAL_SEPHRASTRO_DIR" || { error "Cannot create directory! DIR='$LOCAL_SEPHRASTRO_DIR'"; exit 1; }
+  LOCAL_PYTHON_INSTALLATION_DIR="$HOME/.localpython/python-$PYHTON_VERSION_TO_INSTALL"
+  [ -d "$LOCAL_PYTHON_INSTALLATION_DIR" ] || mkdir -p "$LOCAL_PYTHON_INSTALLATION_DIR" || { error "Cannot create directory! DIR='$LOCAL_PYTHON_INSTALLATION_DIR'"; exit 1; }
+  #
+  # Download python.
+  info "Download python source tarball ..."
+  TMPFILE=`mktemp -p "$LOCAL_PYTHON_BUILD_DIR" "$MYNAME-python-src-XXXXXXX"`
+  trap at_exit EXIT HUP INT QUIT TERM
+  wget -q "https://www.python.org/ftp/python/$PYHTON_VERSION_TO_INSTALL/Python-$PYHTON_VERSION_TO_INSTALL.tar.xz" -O - > "$TMPFILE" || exit 1
+  (
+    cd "$LOCAL_PYTHON_BUILD_DIR" || exit 1
+    tar xf "$TMPFILE" || exit 1
+    rm -f "$TMPFILE"
+    info "Build python version=$PYHTON_VERSION_TO_INSTALL"
+    cd "Python-$PYHTON_VERSION_TO_INSTALL" ||  { error "Cannot change to directory! DIR='$LOCAL_PYTHON_BUILD_DIR/Python-$PYHTON_VERSION_TO_INSTALL'"; exit 1; }
+    #
+    case "$DISTRIBUTION" in
+      Void)
+        info "Build python: ./configure ..."
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 746 || { error "Failed: ./configure ..."; exit 1; }
+        info "Build python: make"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 753 || { error "Failed: make"; exit 1; }
+        info "Build python: make install"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8096 || { error "Failed: make install"; exit 1; }
+        ;;
+      Ubuntu|'Debian GNU/Linux')
+        info "Build python: ./configure ..."
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 747 || { error "Failed: ./configure ..."; exit 1; }
+        info "Build python: make"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 733 || { error "Failed: make"; exit 1; }
+        info "Build python: make install"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8125 || { error "Failed: make install"; exit 1; }
+        ;;
+      Arch|'Garuda Linux')
+        info "Build python: ./configure ..."
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 746 || { error "Failed: ./configure ..."; exit 1; }
+        info "Build python: make"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 776 || { error "Failed: make"; exit 1; }
+        info "Build python: make install"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8119 || { error "Failed: make install"; exit 1; }
+        ;;
+      Fedora|'Fedora Linux')
+        info "Build python: ./configure ..."
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 746 || { error "Failed: ./configure ..."; exit 1; }
+        info "Build python: make"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 779 || { error "Failed: make"; exit 1; }
+        info "Build python: make install"
+        unset OUTPUT_PERCENTAGE_PPERCENT
+        { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8129 || { error "Failed: make install"; exit 1; }
+        ;;
+      *)
+        error "Unknown or invalid distribution! DISTRIBUTION='$DIST_NAME'"
+        exit 1
+        ;;
+    esac
+    exit 0
+  )
+  RC=$?
+  [ -f "$TMPFILE" ] && rm -f "$TMPFILE"
+  [ $RC = 0 ] || exit 1
+  (
+    info "Create Sephrasto python environment ..."
+    (
+      cd "$LOCAL_PYTHON_INSTALLATION_DIR"
+      ./bin/python3 -m pip install --upgrade pip
+      ./bin/python3 -m pip install virtualenv
+      exit 0
+    )
+    RC=$?; [ $RC = 0 ] || exit 1
+    cd "$LOCAL_SEPHRASTRO_DIR"
+    # Create virtual environment.
+    "$LOCAL_PYTHON_INSTALLATION_DIR/bin/python3" -m venv "venv-sephrasto-$PYHTON_VERSION_TO_INSTALL"
+    # Install Sephrasto to virtual environment.
+    do_update_sephrasto || exit 1
     exit 0
   )
   RC=$?
@@ -664,7 +719,7 @@ do_clean() {
   for DIR in \
     "$HOME/.localpython/build/Python-$PYHTON_VERSION_TO_INSTALL" \
     "$HOME/.localpython/bin/venv-sephrasto-$PYHTON_VERSION_TO_INSTALL" \
-    "$HOME/.localpython/python$PYHTON_VERSION_TO_INSTALL"; do
+    "$HOME/.localpython/python-$PYHTON_VERSION_TO_INSTALL"; do
     [ -d "$DIR" ] && { info "Directory to remove: '$DIR'"; IS_SOMETHING_TO_CLEAN=true; }
   done
   for FILE in \
@@ -678,7 +733,7 @@ do_clean() {
       for DIR in \
         "$HOME/.localpython/build/Python-$PYHTON_VERSION_TO_INSTALL" \
         "$HOME/.localpython/bin/venv-sephrasto-$PYHTON_VERSION_TO_INSTALL" \
-        "$HOME/.localpython/python$PYHTON_VERSION_TO_INSTALL"; do
+        "$HOME/.localpython/python-$PYHTON_VERSION_TO_INSTALL"; do
         [ -d "$DIR" ] && { rm -rf "$DIR"; }
       done
       for FILE in \
@@ -712,6 +767,7 @@ Usage: $MYNAME [OPTIONS] COMMAND [...]
 Commands:
   build           -- Download, build and prepare all packages needed by Sephrasto.
   install         -- Install .desktop file for Sephrasto.
+  update          -- Update Sephrasto to the newest version.
   clean           -- Remove all installed stuff.
   uninstall       -- Same as clean.
   run             -- Start Sephrasto.
@@ -827,7 +883,6 @@ OS_DIST_NAME="$DIST_NAME"
   DIST_NAME="$SCRIPT_OPT_DIST_NAME"
   DIST_VERSION=""
 }
-DIST_NAME=`get_dists --map "$DIST_NAME"`
 debug "DIST_NAME='$DIST_NAME' DIST_VERSION='$DIST_VERSION'"
 # Check distribution.
 get_dists --check "$DIST_NAME" || {
@@ -835,9 +890,6 @@ get_dists --check "$DIST_NAME" || {
   error "List all valid distributions with command \`list\`."
   exit 1
 }
-#
-#----------
-#
 is_glibc || {
   error "Sorry, you should have glibc (https://www.gnu.org/software/libc/) to run Sephrasto!"
   exit 1
@@ -850,6 +902,7 @@ cat <&6 | while read ARG; do
   case "$ARG" in
     build) do_build "$DIST_NAME"; RC=$?; [ $RC = 0 ] || exit $RC;;
     install) do_install; RC=$?; [ $RC = 0 ] || exit $RC;;
+    update) do_update_sephrasto; RC=$?; [ $RC = 0 ] || exit $RC;;
     clean|uninstall) do_clean; RC=$?; [ $RC = 0 ] || exit $RC;;
     run|start) do_run; RC=$?; [ $RC = 0 ] || exit $RC;;
     sudo_install_void_packages) sudo_install_void_packages; RC=$?; [ $RC = 0 ] || exit $RC;;
