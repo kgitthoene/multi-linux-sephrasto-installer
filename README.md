@@ -10,7 +10,7 @@ A separate Python version is installed, which does not interfere with the Python
 ### Download of the Installer
 Download the installer.
 ```
-wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/multi-linux-sephrasto-installer-python3.9.7.sh
+wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/multi-linux-sephrasto-installer-python-3.9.7.sh
 ```
 
 ### Example
@@ -18,7 +18,7 @@ wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installe
 Download, build and install Python 3.9.7 and Sephrasto.
 
 ```
-/bin/sh ./multi-linux-sephrasto-installer-python3.9.7.sh build install
+/bin/sh ./multi-linux-sephrasto-installer-python-3.9.7.sh build install
 ```
 
 ### Tests
@@ -42,11 +42,12 @@ The tests were carried out on fresh installations.
 ### Usage
 
 ```
-Usage: multi-linux-sephrasto-installer-python3.9.7.sh [OPTIONS] COMMAND [...]
+Usage: multi-linux-sephrasto-installer-python-3.9.7.sh [OPTIONS] COMMAND [...]
 Commands:
   build           -- Download, build and prepare all packages needed by Sephrasto.
   install         -- Install .desktop file for Sephrasto.
   clean           -- Remove all installed stuff.
+  update          -- Update Sephrasto to the newest version.
   uninstall       -- Same as clean.
   run             -- Start Sephrasto.
   start           -- Same as run.
