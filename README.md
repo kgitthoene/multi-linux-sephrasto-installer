@@ -46,7 +46,7 @@ Usage: multi-linux-sephrasto-installer-python-3.9.7.sh [OPTIONS] COMMAND [...]
 Commands:
   build           -- Download, build and prepare all packages needed by Sephrasto.
   install         -- Install .desktop file for Sephrasto.
-  clean           -- Remove all installed stuff.
+  clean           -- Remove all installed stuff
   update          -- Update Sephrasto to the newest version.
   uninstall       -- Same as clean.
   run             -- Start Sephrasto.
@@ -59,7 +59,7 @@ Options:
   -h, --help      -- Print this text.
 ```
 
-#### build
+#### buildXXX
 
 The `build` command updates your Linux, installs all needed packages, builds [Python](https://www.python.org/) 3.9.7 in a separate directory and creates a virtual Python environment to run Sephrasto.
 
