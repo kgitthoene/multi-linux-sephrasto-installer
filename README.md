@@ -1,7 +1,7 @@
 # multi-linux-sephrasto-installer
 Bourne shell script to install [Sephrasto](https://github.com/Aeolitus/Sephrasto) on popular Linux distributions.
 
-It works on [Ubuntu](https://ubuntu.com/)/[Debian](https://www.debian.org/), [Fedora](https://getfedora.org/), [Arch Linux](https://archlinux.org/) and [Void Linux](https://voidlinux.org/) - `glibc` variant. Doesn't work with `musl`, see tests.
+It works on [Ubuntu](https://ubuntu.com/)/[Debian](https://www.debian.org/)/[Linux Mint](https://linuxmint.com/), [Fedora](https://getfedora.org/), [Arch Linux](https://archlinux.org/) and [Void Linux](https://voidlinux.org/) - `glibc` variant. Doesn't work with `musl`, see tests.
 
 A separate Python version is installed, which does not interfere with the Python installation of the operating system.
 
@@ -31,6 +31,7 @@ The tests were carried out on fresh installations.
 | [Debian](https://www.debian.org/)         | `12.2.0-amd64-xfce`                  | Debian      | WORKING     |
 | [Xubuntu](https://xubuntu.org/)           | `22.04.3-desktop-amd64 LTS`          | Ubuntu      | WORKING     |
 | [Xubuntu](https://xubuntu.org/)           | `23.10-desktop-amd64`                | Ubuntu      | WORKING     |
+| [Linux Mint](https://linuxmint.com/)      | `22.1_x64`                           | Debian      | WORKING     |
 | [MX Linux](https://mxlinux.org/)          | `23.1_x64`                           | Debian      | WORKING     |
 | [Garuda Linux](https://garudalinux.org/)  | `xfce-linux-lts-231029`              | Arch        | WORKING     |
 | [Fedora](https://getfedora.org/)          | `x86_64-38-1.6`                      | Fedora      | WORKING     |

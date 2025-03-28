@@ -452,7 +452,7 @@ get_dists() {
     return $RC
   else
     # Echo all known distributions.
-    for D in Void Ubuntu 'Debian GNU/Linux' Arch 'Garuda Linux' Fedora 'Fedora Linux'; do echo "$D"; done
+    for D in Void Ubuntu 'Debian GNU/Linux' 'Linux Mint' Arch 'Garuda Linux' Fedora 'Fedora Linux'; do echo "$D"; done
   fi
   return 0
 }  # get_dists
@@ -473,14 +473,14 @@ sudo_install_void_packages() {
 sudo_install_ubuntu_packages() {
   # Packages to build python3:
   info "Update system ... (On a fresh system this may take a long time.)"
-  { apt -y update 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed: apt -y update"; exit 1; }
-  { apt -y upgrade 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed: apt -y upgrade"; exit 1; }
+  { apt-get -y update 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed: apt-get -y update"; exit 1; }
+  { apt-get -y upgrade 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed: apt-get -y upgrade"; exit 1; }
   # Packages to build python
   info "Install packages to build python ..."
-  { apt -y install build-essential binutils bc tar wget git xz-utils autoconf libtool libssl-dev libzip-dev libncurses-dev libreadline-dev libyaml-dev libffi-dev libx11-xcb-dev libzstd-dev libgdbm-dev liblzma-dev tk-dev libipset-dev libnsl-dev libtirpc-dev libncursesw5-dev libc6-dev libsqlite3-dev libbz2-dev libsqlite3-dev zlib1g zlib1g-dev 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed to install packages to build python!"; exit 1; }
+  { apt-get -y install build-essential binutils bc tar wget git xz-utils autoconf libtool libssl-dev libzip-dev libncurses-dev libreadline-dev libyaml-dev libffi-dev libx11-xcb-dev libzstd-dev libgdbm-dev liblzma-dev tk-dev libipset-dev libnsl-dev libtirpc-dev libncursesw5-dev libc6-dev libsqlite3-dev libbz2-dev libsqlite3-dev zlib1g zlib1g-dev 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed to install packages to build python!"; exit 1; }
   # Packages to run Sephrasto
   info "Install packages to run Sephrasto ..."
-  { apt -y install qtcreator qtbase5-dev qt5-qmake libxcb-composite0 libxcb-cursor0 libxcb-damage0 libxcb-doc libxcb-dpms0 libxcb-dri2-0 libxcb-dri3-0 libxcb-ewmh2 libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-imdkit1 libxcb-keysyms1 libxcb-present0 libxcb-randr0 libxcb-record0 libxcb-render-util0 libxcb-render0 libxcb-res0 libxcb-screensaver0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xf86dri0 libxcb-xfixes0 libxcb-xinerama0 libxcb-xinput0 libxcb-xkb1 libxcb-xrm0 libxcb-xtest0 libxcb-xv0 libxcb-xvmc0 libxcb1 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed to install packages to run Sephrasto!"; exit 1; }
+  { apt-get -y install qtcreator qtbase5-dev qt5-qmake libxcb-composite0 libxcb-cursor0 libxcb-damage0 libxcb-doc libxcb-dpms0 libxcb-dri2-0 libxcb-dri3-0 libxcb-ewmh2 libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-imdkit1 libxcb-keysyms1 libxcb-present0 libxcb-randr0 libxcb-record0 libxcb-render-util0 libxcb-render0 libxcb-res0 libxcb-screensaver0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xf86dri0 libxcb-xfixes0 libxcb-xinerama0 libxcb-xinput0 libxcb-xkb1 libxcb-xrm0 libxcb-xtest0 libxcb-xv0 libxcb-xvmc0 libxcb1 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error || { error "Failed to install packages to run Sephrasto!"; exit 1; }
 }  # sudo_install_ubuntu_packages
 #
 sudo_install_arch_packages() {
@@ -591,7 +591,7 @@ do_build() {
   DISTRIBUTION="$1"; shift
   case "$DISTRIBUTION" in
     Void) do_with_sudo sudo_install_void_packages || exit 1;;
-    Ubuntu|'Debian GNU/Linux') do_with_sudo sudo_install_ubuntu_packages || exit 1;;
+    Ubuntu|'Debian GNU/Linux'|'Linux Mint') do_with_sudo sudo_install_ubuntu_packages || exit 1;;
     Arch|'Garuda Linux') do_with_sudo sudo_install_arch_packages || exit 1;;
     Fedora|'Fedora Linux') do_with_sudo sudo_install_fedora_packages || exit 1;;
     *)
@@ -632,7 +632,7 @@ do_build() {
         unset OUTPUT_PERCENTAGE_PPERCENT
         { make install 2>&1; echo PIPESTATE0=$?; } | output_in_case_of_error --count 8096 || { error "Failed: make install"; exit 1; }
         ;;
-      Ubuntu|'Debian GNU/Linux')
+      Ubuntu|'Debian GNU/Linux'|'Linux Mint')
         info "Build python: ./configure ..."
         unset OUTPUT_PERCENTAGE_PPERCENT
         { ./configure --prefix="$LOCAL_PYTHON_INSTALLATION_DIR" 2>&1 ; echo PIPESTATE0=$?; } | output_in_case_of_error --count 747 || { error "Failed: ./configure ..."; exit 1; }
