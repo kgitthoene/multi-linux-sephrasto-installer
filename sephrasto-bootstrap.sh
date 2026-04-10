@@ -5,6 +5,11 @@ MYDIR=`dirname "$ME"`
 MYDIR=`cd "$MYDIR"; pwd`
 WD=`pwd`
 #
+# Get run script.
+wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/run-sephrasto.sh
+chmod a+rx run-sephrasto.sh
+echo "[I] Downloaded 'run-sephrasto.sh' for you." >&2
+#
 # This is where all the stuff is installed inside.
 SEPHRASTO_DIR="Sephrasto"
 [ -d "$SEPHRASTO_DIR" ] && { echo "[E] Directory exists! Remove it first! DIR='$SEPHRASTO_DIR'" >&2; exit 1; }
@@ -33,14 +38,6 @@ ACTIVATE="$SEPHRASTO_DIR/.venv/bin/activate"
   python -m pip install pip --upgrade || { echo "[E] Cannot upgrade pip!" >&2; exit 1; }
   python -m pip install -r "Sephrasto/requirements.txt" || { echo "[E] Cannot install Sephrasto requirements!" >&2; exit 1; }
   #
-  # Get run script.
-  wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/run-sephrasto.sh
-  chmod a+rx run-sephrasto.sh
-  echo "[I] Downloaded 'run-sephrasto.sh' for you." >&2
-  echo "[I] Start it to test Sephrasto:" >&2
-  echo "[I]   ./run-sephrasto.sh" >&2
-  echo "[I]" >&2
-  #
   # Create the .desktop file.
   cat > "$MYDIR/Sephrasto.desktop" <<EOF
 [Desktop Entry]
@@ -57,6 +54,10 @@ EOF
   echo "[I]   cp Sephrasto.desktop \"\$HOME/.local/share/applications\"" >&2
   echo "[I]" >&2
   echo "[I] Remember: 'Sephrasto.desktop' depends on 'run-sephrasto.sh'!" >&2
+  echo "[I]" >&2
+  echo "[I] Start it to test Sephrasto:" >&2
+  echo "[I]   ./run-sephrasto.sh" >&2
+  echo "[I]" >&2
   #
 }
 exit 0
