@@ -34,7 +34,7 @@ Install Python version 3.11.15:
 pyenv install 3.11.15
 ```
 
-#### Install the latest version of Sephrasto
+### Install the latest version of Sephrasto
 
 ```
 mkdir Sephrasto
