@@ -51,7 +51,7 @@ Terminal=false
 EOF
   echo "[I] Created 'Sephrasto.desktop' for you." >&2
   mkdir -p "$HOME/.local/share/applications"
-  cp Sephrasto.desktop "$HOME/.local/share/applications"
+  cp "$MYDIR/Sephrasto.desktop" "$HOME/.local/share/applications"
   echo "[I] Installed 'Sephrasto.desktop' to \"\$HOME/.local/share/applications\"" >&2
   echo "[I]" >&2
   echo "[I] Remember: 'Sephrasto.desktop' depends on 'run-sephrasto.sh'!" >&2
@@ -59,7 +59,7 @@ EOF
   echo "[I] Start it to test Sephrasto:" >&2
   echo "[I]   ./run-sephrasto.sh" >&2
   echo "[I]" >&2
-  echo "[I] You'll find Sephrasto under 'Games' aka 'Spiele' (DE)." >&2
+  echo "[I] You'll find Sephrasto under 'Games' aka. 'Spiele' (DE)." >&2
   echo "[I]" >&2
   #
 }
