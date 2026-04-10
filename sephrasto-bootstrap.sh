@@ -33,7 +33,12 @@ ACTIVATE="$SEPHRASTO_DIR/.venv/bin/activate"
   python -m pip install pip --upgrade || { echo "[E] Cannot upgrade pip!" >&2; exit 1; }
   python -m pip install -r "Sephrasto/requirements.txt" || { echo "[E] Cannot install Sephrasto requirements!" >&2; exit 1; }
   #
-  # Create .desktop file.
+  # Get run script.
+  wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/run-sephrasto.sh
+  chmod a+rx run-sephrasto.sh
+  echo "[I] Downloaded 'run-sephrasto.sh' for you." >&2
+  #
+  # Create the .desktop file.
   cat > "$MYDIR/Sephrasto.desktop" <<EOF
 [Desktop Entry]
 Type=Application

@@ -11,7 +11,7 @@ A separate Python version is installed, which does not interfere with the Python
 
 #### Install Python build dependencies
 
-Follow this guide to install the Python build dependencies: [pyenv Wiki](https://github.com/pyenv/pyenv?tab=readme-ov-file#d-install-python-build-dependencies).
+Follow this guide to install the Python build dependencies: [pyenv-wiki](https://github.com/pyenv/pyenv?tab=readme-ov-file#d-install-python-build-dependencies).
 Scroll to your OS and follow the instructions.
 
 #### Install pyenv
@@ -29,7 +29,7 @@ Add pyenv to your login shell, the instructions for this are displayed at the en
 
 #### Install the Python version recommended by the Sephrasto team
 
-For Sephrasto 5.1.0, 5.2.0 Python version 3.11.x is recommended by the Sephrasto team.
+For Sephrasto 5.1.0, 5.2.0 (2026, April) Python version 3.11.x is recommended by the Sephrasto team.
 Install Python version 3.11.15:
 
 ```
