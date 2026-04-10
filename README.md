@@ -48,6 +48,8 @@ chmod a+rx sephrasto-bootstrap.sh
 
 It is not necessary to name the top level directory `Sephrasto`, take any name of your choice at any place.
 
+You'll find Sephrasto under 'Games' aka. 'Spiele' (DE).
+
 ### Tests
 
 The tests were carried out on fresh installations.
