@@ -16,11 +16,9 @@ Scroll to your OS and follow the instructions.
 
 #### Install pyenv
 
-Follow the instructions [here](https://github.com/pyenv/pyenv?tab=readme-ov-file#installation) or use the automatic installer (recommended).
-Goto to your home directory and do the magic:
+Follow the instructions [here](https://github.com/pyenv/pyenv?tab=readme-ov-file#installation) or use the automatic installer (recommended):
 
 ```
-cd
 curl -fsSL https://pyenv.run | bash
 
 ```
