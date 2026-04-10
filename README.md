@@ -7,19 +7,48 @@ A separate Python version is installed, which does not interfere with the Python
 
 ## Table of Contents
 
-### Download of the Installer
-Download the installer.
+### Install [pyenv](https://github.com/pyenv/pyenv)
+
+#### Install Python build dependencies
+
+Follow this guide to install the Python build dependencies: [pyenv Wiki](https://github.com/pyenv/pyenv?tab=readme-ov-file#d-install-python-build-dependencies).
+Scroll to your OS and follow the instructions.
+
+#### Install pyenv
+
+Follow the instructions [here](https://github.com/pyenv/pyenv?tab=readme-ov-file#installation) or use the automatic installer (recommended).
+Goto to your home directory and do the magic:
+
 ```
-wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/multi-linux-sephrasto-installer-python-3.9.7.sh
+cd
+curl -fsSL https://pyenv.run | bash
+
 ```
 
-### Example
+Add pyenv to your login shell, the instructions for this are displayed at the end of the installation.
 
-Download, build and install Python 3.9.7 and Sephrasto.
+#### Install the Python version recommended by the Sephrasto team
+
+For Sephrasto 5.1.0, 5.2.0 Python version 3.11.x is recommended by the Sephrasto team.
+Install Python version 3.11.15:
 
 ```
-/bin/sh ./multi-linux-sephrasto-installer-python-3.9.7.sh build install
+pyenv install 3.11.15
 ```
+
+#### Install the latest version of Sephrasto
+
+```
+mkdir Sephrasto
+cd Sephrasto
+pyenv local 3.11.15
+wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/sephrasto-bootstrap.sh
+chmod a+rx sephrasto-bootstrap.sh
+./sephrasto-bootstrap.sh
+
+```
+
+It is not necessary to name the top level directory `Sephrasto`, take any name of your choice at any place.
 
 ### Tests
 
