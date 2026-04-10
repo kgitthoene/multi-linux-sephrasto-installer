@@ -5,15 +5,15 @@ MYDIR=`dirname "$ME"`
 MYDIR=`cd "$MYDIR"; pwd`
 WD=`pwd`
 #
-# Get run script.
-wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/run-sephrasto.sh
-chmod a+rx run-sephrasto.sh
-echo "[I] Downloaded 'run-sephrasto.sh' for you." >&2
-#
 # This is where all the stuff is installed inside.
 SEPHRASTO_DIR="Sephrasto"
 [ -d "$SEPHRASTO_DIR" ] && { echo "[E] Directory exists! Remove it first! DIR='$SEPHRASTO_DIR'" >&2; exit 1; }
 mkdir "$SEPHRASTO_DIR"
+#
+# Get run script.
+wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/run-sephrasto.sh
+chmod a+rx run-sephrasto.sh
+echo "[I] Downloaded 'run-sephrasto.sh' for you." >&2
 #
 cd "$SEPHRASTO_DIR"
 SEPHRASTO_DIR=`pwd`
