@@ -37,6 +37,9 @@ ACTIVATE="$SEPHRASTO_DIR/.venv/bin/activate"
   wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/run-sephrasto.sh
   chmod a+rx run-sephrasto.sh
   echo "[I] Downloaded 'run-sephrasto.sh' for you." >&2
+  echo "[I] Start it to test Sephrasto:" >&2
+  echo "[I]   ./run-sephrasto.sh" >&2
+  echo "[I]" >&2
   #
   # Create the .desktop file.
   cat > "$MYDIR/Sephrasto.desktop" <<EOF
@@ -52,6 +55,8 @@ EOF
   echo "[I] Created 'Sephrasto.desktop' for you." >&2
   echo "[I] Install it with:" >&2
   echo "[I]   cp Sephrasto.desktop \"\$HOME/.local/share/applications\"" >&2
+  echo "[I]" >&2
+  echo "[I] Remember: 'Sephrasto.desktop' depends on 'run-sephrasto.sh'!" >&2
   #
 }
 exit 0
