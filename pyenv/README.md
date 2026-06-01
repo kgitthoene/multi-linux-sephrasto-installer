@@ -7,9 +7,23 @@ A separate Python version is installed, which does not interfere with the Python
 
 ## Table of Contents
 
-### Install [uv](https://github.com/astral-sh/uv)
+### Install [pyenv](https://github.com/pyenv/pyenv)
 
-Follow the instructions [here](https://github.com/astral-sh/uv#installation).
+#### Install Python build dependencies
+
+Follow this guide to install the Python build dependencies: [pyenv-wiki](https://github.com/pyenv/pyenv?tab=readme-ov-file#d-install-python-build-dependencies).
+Scroll to your OS and follow the instructions.
+
+#### Install pyenv
+
+Follow the instructions [here](https://github.com/pyenv/pyenv?tab=readme-ov-file#installation) or use the automatic installer (recommended):
+
+```
+curl -fsSL https://pyenv.run | bash
+
+```
+
+Add pyenv to your login shell, the instructions for this are displayed at the end of the installation.
 
 #### Install the Python version recommended by the Sephrasto team
 
@@ -17,28 +31,24 @@ For Sephrasto 5.1.0, 5.2.0 (2026, April) Python version 3.11.x is recommended by
 Install Python version 3.11.15:
 
 ```
-uv python install 3.11
+pyenv install 3.11.15
 ```
 
 ### Install the latest version of Sephrasto
 
 ```
-mkdir Sephrasto && cd Sephrasto
-wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/uv-sephrasto-bootstrap.sh
-chmod a+rx uv-sephrasto-bootstrap.sh
-./uv-sephrasto-bootstrap.sh
+mkdir Sephrasto
+cd Sephrasto
+pyenv local 3.11.15
+wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/sephrasto-bootstrap.sh
+chmod a+rx sephrasto-bootstrap.sh
+./sephrasto-bootstrap.sh
 
 ```
 
 It is not necessary to name the top level directory `Sephrasto`, take any name of your choice at any place.
 
-To upgrade Sephrasto enter:
-
-```
-./uv-sephrasto-bootstrap.sh upgrade
-```
-
-You'll find Sephrasto under 'Games' aka. 'Spiele' (DE) in your window manager.
+You'll find Sephrasto under 'Games' aka. 'Spiele' (DE).
 
 ### Tests
 

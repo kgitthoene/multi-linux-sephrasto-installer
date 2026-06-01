@@ -9,23 +9,42 @@ type uv >/dev/null 2>&1 || { echo "[E] Please install uv: https://docs.astral.sh
 type git >/dev/null 2>&1 || { echo "[E] Please install 'git'" >&2; exit 1; }
 type wget >/dev/null 2>&1 || { echo "[E] Please install 'wget'" >&2; exit 1; }
 
+cd "$MYDIR"
+
 #
 # Get run script.
-wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/uv-run-sephrasto.sh
+wget -q https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/uv-run-sephrasto.sh -O uv-run-sephrasto.sh || { echo "[E] Cannot download 'uv-run-sephrasto.sh'" >&2; exit 1; }
 chmod a+rx uv-run-sephrasto.sh
 echo "[I] Downloaded 'uv-run-sephrasto.sh' for you." >&2
+
+SCRIPT_CMD_UPGRADE=false
+for ARG in $@; do
+  [ "$ARG" = "upgrade" ] && SCRIPT_CMD_UPGRADE=true
+done
 
 #
 # This is where all the stuff is installed inside.
 SEPHRASTO_DIR="Sephrasto"
-[ -d "$SEPHRASTO_DIR" ] && { echo "[E] Directory exists! Remove it first! DIR='$SEPHRASTO_DIR'" >&2; exit 1; }
-uv init "$SEPHRASTO_DIR" || { echo "[E] Cannot initialize Sephrasto with uv!" >&2; exit 1; }
+if [ "$SCRIPT_CMD_UPGRADE" = true ]; then
+  [ -d "$SEPHRASTO_DIR" ] || { echo "[E] Non-existing directory! DIR='$SEPHRASTO_DIR'" >&2; exit 1; }
+else
+  [ -d "$SEPHRASTO_DIR" ] && { echo "[E] Directory exists! Remove it first! DIR='$SEPHRASTO_DIR'" >&2; exit 1; }
+  uv init "$SEPHRASTO_DIR" || { echo "[E] Cannot initialize Sephrasto with uv!" >&2; exit 1; }
+fi
 #
 cd "$SEPHRASTO_DIR"
 SEPHRASTO_DIR=`pwd`
 #
-echo "[I] Clone Sephrasto ..." >&2
-git clone https://github.com/Aeolitus/Sephrasto.git || { echo "[E] Cannot clone Sephrasto!" >&2; exit 1; }
+if [ "$SCRIPT_CMD_UPGRADE" = true ]; then
+  (
+    echo "[I] Upgrade Sephrasto ..." >&2
+    cd "Sephrasto"
+    git pull origin master || { echo "[E] Cannot upgrade Sephrasto!" >&2; exit 1; }
+  )
+else
+  echo "[I] Clone Sephrasto ..." >&2
+  git clone https://github.com/Aeolitus/Sephrasto.git || { echo "[E] Cannot clone Sephrasto!" >&2; exit 1; }
+fi
 #
 echo "[I] Install Sephrasto python requirements..." >&2
 uv add -r "Sephrasto/requirements.txt" || { echo "[E] Cannot install Sephrasto requirements!" >&2; exit 1; }
@@ -41,18 +60,17 @@ Icon=$MYDIR/Sephrasto/Sephrasto/src/Sephrasto/icon_large.png
 Categories=Game;
 Terminal=false
 EOF
-  echo "[I] Created 'Sephrasto.desktop' for you." >&2
-  mkdir -p "$HOME/.local/share/applications"
-  #cp "$MYDIR/Sephrasto.desktop" "$HOME/.local/share/applications"
-  echo "[I] Installed 'Sephrasto.desktop' to \"\$HOME/.local/share/applications\"" >&2
-  echo "[I]" >&2
-  echo "[I] Remember: 'Sephrasto.desktop' depends on 'run-sephrasto.sh'!" >&2
-  echo "[I]" >&2
-  echo "[I] Start it to test Sephrasto:" >&2
-  echo "[I]   ./run-sephrasto.sh" >&2
-  echo "[I]" >&2
-  echo "[I] You'll find Sephrasto under 'Games' aka. 'Spiele' (DE)." >&2
-  echo "[I]" >&2
-  #
-}
+echo "[I] Created 'Sephrasto.desktop' for you." >&2
+mkdir -p "$HOME/.local/share/applications"
+#cp "$MYDIR/Sephrasto.desktop" "$HOME/.local/share/applications"
+echo "[I] Installed 'Sephrasto.desktop' to \"\$HOME/.local/share/applications\"" >&2
+echo "[I]" >&2
+echo "[I] Remember: 'Sephrasto.desktop' depends on 'uv-run-sephrasto.sh'!" >&2
+echo "[I]" >&2
+echo "[I] Start it to test Sephrasto:" >&2
+echo "[I]   ./uv-run-sephrasto.sh" >&2
+echo "[I]" >&2
+echo "[I] You'll find Sephrasto under 'Games' aka. 'Spiele' (DE) in your windows manager." >&2
+echo "[I]" >&2
+#
 exit 0
