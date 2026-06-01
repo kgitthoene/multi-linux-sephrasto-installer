@@ -1,4 +1,8 @@
-# multi-linux-sephrasto-installer
+# multi-linux-sephrasto-installer pyenv flavor
+
+## ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) This directory and its scripts remain as an archive for use by pyenv. They are not required for installing Sephrasto! ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png)
+
+
 Bourne shell script to install [Sephrasto](https://github.com/Aeolitus/Sephrasto) on popular Linux distributions.
 
 It works on [Ubuntu](https://ubuntu.com/)/[Debian](https://www.debian.org/)/[Linux Mint](https://linuxmint.com/), [Fedora](https://getfedora.org/), [Arch Linux](https://archlinux.org/) and [Void Linux](https://voidlinux.org/) - `glibc` variant. Doesn't work with `musl`, see tests.

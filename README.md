@@ -9,6 +9,8 @@ A separate Python version is installed, which does not interfere with the Python
 
 ### Install [uv](https://github.com/astral-sh/uv)
 
+uv is „an extremely fast Python package and project manager, written in Rust“.
+
 Follow the instructions [here](https://github.com/astral-sh/uv#installation).
 
 #### Install the Python version recommended by the Sephrasto team
