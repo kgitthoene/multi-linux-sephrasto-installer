@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Sephrasto
-Exec="/media/_home/home/kthoene/Dokumente/DEV/Shell/multi-linux-sephrasto-installer/uv-run-sephrasto.sh"
-Comment=Sephrasto
-Icon=/media/_home/home/kthoene/Dokumente/DEV/Shell/multi-linux-sephrasto-installer/Sephrasto/Sephrasto/src/Sephrasto/icon_large.png
-Categories=Game;
-Terminal=false
