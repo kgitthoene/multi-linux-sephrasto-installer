@@ -29,7 +29,7 @@ echo "[I] LD_LIBRARY_PATH='$LD_LIBRARY_PATH'" >&2
 echo "[I] Start programm ..." >&2
 cd "$SEPHRASTO_DIR" || { echo "[E] Cannot change to directory! DIR='$SEPHRASTO_DIR'" >&2; exit 1; }
 PRG="Sephrasto/src/Sephrasto/Sephrasto.py"
-if uv run "$PRG"; then
+if uv run --python 3.11 python "$PRG"; then
   echo "[I] Normal program termination." >&2
 else
   echo "[E] Abnormal program termination." >&2
