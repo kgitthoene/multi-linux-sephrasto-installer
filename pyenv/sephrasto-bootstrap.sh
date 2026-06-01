@@ -11,7 +11,7 @@ SEPHRASTO_DIR="Sephrasto"
 mkdir "$SEPHRASTO_DIR"
 #
 # Get run script.
-wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/run-sephrasto.sh
+wget -q https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/pyenv/run-sephrasto.sh -O run-sephrasto.sh
 chmod a+rx run-sephrasto.sh
 echo "[I] Downloaded 'run-sephrasto.sh' for you." >&2
 #

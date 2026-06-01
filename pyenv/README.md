@@ -44,7 +44,7 @@ pyenv install 3.11.15
 mkdir Sephrasto
 cd Sephrasto
 pyenv local 3.11.15
-wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/sephrasto-bootstrap.sh
+wget https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/pyenv/sephrasto-bootstrap.sh
 chmod a+rx sephrasto-bootstrap.sh
 ./sephrasto-bootstrap.sh
 
