@@ -11,6 +11,18 @@ type wget >/dev/null 2>&1 || { echo "[E] Please install 'wget'" >&2; exit 1; }
 
 cd "$MYDIR"
 
+SEPHRASTO_PYTHON_VERSION="3.11"
+echo 'SEPHRASTO_PYTHON_VERSION="3.11"' > .env
+
+# Check uv & python version.
+uv run --python 3.18 python -c 'import sys; sys.exit(0)' || {
+  echo "[E] Please install python version $SEPHRASTO_PYTHON_VERSION!" >&2
+  echo "[I]" >&2
+  echo "[I]   uv python install $SEPHRASTO_PYTHON_VERSION" >&2
+  echo "[I]" >&2
+  exit 1
+}
+
 #
 # Get run script.
 wget -q https://raw.githubusercontent.com/kgitthoene/multi-linux-sephrasto-installer/master/uv-run-sephrasto.sh -O uv-run-sephrasto.sh || { echo "[E] Cannot download 'uv-run-sephrasto.sh'" >&2; exit 1; }
@@ -29,7 +41,7 @@ if [ "$SCRIPT_CMD_UPGRADE" = true ]; then
   [ -d "$SEPHRASTO_DIR" ] || { echo "[E] Non-existing directory! DIR='$SEPHRASTO_DIR'" >&2; exit 1; }
 else
   [ -d "$SEPHRASTO_DIR" ] && { echo "[E] Directory exists! Remove it first! DIR='$SEPHRASTO_DIR'" >&2; exit 1; }
-  uv init --python 3.11 "$SEPHRASTO_DIR" || { echo "[E] Cannot initialize Sephrasto with uv!" >&2; exit 1; }
+  uv init --python $SEPHRASTO_PYTHON_VERSION "$SEPHRASTO_DIR" || { echo "[E] Cannot initialize Sephrasto with uv!" >&2; exit 1; }
 fi
 #
 cd "$SEPHRASTO_DIR"
@@ -47,7 +59,7 @@ else
 fi
 #
 echo "[I] Install Sephrasto python requirements..." >&2
-uv add --python 3.11 -r "Sephrasto/requirements.txt" || { echo "[E] Cannot install Sephrasto requirements!" >&2; exit 1; }
+uv add --python $SEPHRASTO_PYTHON_VERSION -r "Sephrasto/requirements.txt" || { echo "[E] Cannot install Sephrasto requirements!" >&2; exit 1; }
 #
 # Create the .desktop file.
 cat > "$MYDIR/Sephrasto.desktop" <<EOF

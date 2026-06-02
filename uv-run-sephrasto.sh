@@ -10,6 +10,9 @@ cd "$MYDIR"
 
 type uv >/dev/null 2>&1 || { echo "[E] Please install uv: https://docs.astral.sh/uv/" >&2; exit 1; }
 
+[ -r .env ] && . .env
+SEPHRASTO_PYTHON_VERSION="${SEPHRASTO_PYTHON_VERSION:-3.11}"
+
 #
 # This is where all the stuff is installed inside.
 SEPHRASTO_DIR="Sephrasto"
@@ -29,7 +32,7 @@ echo "[I] LD_LIBRARY_PATH='$LD_LIBRARY_PATH'" >&2
 echo "[I] Start programm ..." >&2
 cd "$SEPHRASTO_DIR" || { echo "[E] Cannot change to directory! DIR='$SEPHRASTO_DIR'" >&2; exit 1; }
 PRG="Sephrasto/src/Sephrasto/Sephrasto.py"
-if uv run --python 3.11 python "$PRG"; then
+if uv run --python $SEPHRASTO_PYTHON_VERSION python "$PRG"; then
   echo "[I] Normal program termination." >&2
 else
   echo "[E] Abnormal program termination." >&2
