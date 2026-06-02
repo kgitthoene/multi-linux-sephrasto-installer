@@ -29,7 +29,7 @@ if [ "$SCRIPT_CMD_UPGRADE" = true ]; then
   [ -d "$SEPHRASTO_DIR" ] || { echo "[E] Non-existing directory! DIR='$SEPHRASTO_DIR'" >&2; exit 1; }
 else
   [ -d "$SEPHRASTO_DIR" ] && { echo "[E] Directory exists! Remove it first! DIR='$SEPHRASTO_DIR'" >&2; exit 1; }
-  uv init "$SEPHRASTO_DIR" || { echo "[E] Cannot initialize Sephrasto with uv!" >&2; exit 1; }
+  uv init --python 3.11 "$SEPHRASTO_DIR" || { echo "[E] Cannot initialize Sephrasto with uv!" >&2; exit 1; }
 fi
 #
 cd "$SEPHRASTO_DIR"
@@ -47,7 +47,7 @@ else
 fi
 #
 echo "[I] Install Sephrasto python requirements..." >&2
-uv add -r "Sephrasto/requirements.txt" || { echo "[E] Cannot install Sephrasto requirements!" >&2; exit 1; }
+uv add --python 3.11 -r "Sephrasto/requirements.txt" || { echo "[E] Cannot install Sephrasto requirements!" >&2; exit 1; }
 #
 # Create the .desktop file.
 cat > "$MYDIR/Sephrasto.desktop" <<EOF

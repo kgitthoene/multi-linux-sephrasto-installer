@@ -12,6 +12,7 @@ A separate Python version is installed, which does not interfere with the Python
 uv is „an extremely fast Python package and project manager, written in Rust“.
 
 Follow the instructions [here](https://github.com/astral-sh/uv#installation).
+I prefer the standalone installer.
 
 #### Install the Python version recommended by the Sephrasto team
 
@@ -34,13 +35,13 @@ chmod a+rx uv-sephrasto-bootstrap.sh
 
 It is not necessary to name the top level directory `Sephrasto`, take any name of your choice at any place.
 
-To upgrade Sephrasto enter:
+To upgrade an installed Sephrasto enter:
 
 ```
 ./uv-sephrasto-bootstrap.sh upgrade
 ```
 
-You'll find Sephrasto under 'Games' aka. 'Spiele' (DE) in your window manager.
+You'll find Sephrasto under 'Games' aka. 'Spiele' (DE) in your window manager menu.
 
 ### Tests
 
