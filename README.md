@@ -5,6 +5,8 @@ It works on [Ubuntu](https://ubuntu.com/)/[Debian](https://www.debian.org/)/[Lin
 
 A separate Python version is installed, which does not interfere with the Python installation of the operating system.
 
+All installations take place for the current user. Aka. userland installation.
+
 ## Table of Contents
 
 ### Install [uv](https://github.com/astral-sh/uv)
