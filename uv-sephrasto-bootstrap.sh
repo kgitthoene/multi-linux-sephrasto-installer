@@ -15,7 +15,7 @@ SEPHRASTO_PYTHON_VERSION="3.11"
 echo 'SEPHRASTO_PYTHON_VERSION="3.11"' > .env
 
 # Check uv & python version.
-uv run --python 3.18 python -c 'import sys; sys.exit(0)' || {
+uv run --python $SEPHRASTO_PYTHON_VERSION python -c 'import sys; sys.exit(0)' || {
   echo "[E] Please install python version $SEPHRASTO_PYTHON_VERSION!" >&2
   echo "[I]" >&2
   echo "[I]   uv python install $SEPHRASTO_PYTHON_VERSION" >&2
